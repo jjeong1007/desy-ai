@@ -1,0 +1,36 @@
+"use client";
+import { useEffect } from "react";
+import { Toaster } from "sonner";
+import { TooltipProvider } from "@/components/ui/overlay";
+import { useDesy } from "@/store/desy";
+
+function applyTheme(theme: "light" | "dark" | "system") {
+  const dark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.classList.toggle("dark", dark);
+}
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  const hydrate = useDesy((s) => s.hydrate);
+  const theme = useDesy((s) => s.settings?.theme);
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
+  useEffect(() => {
+    if (!theme) return;
+    applyTheme(theme);
+    if (theme !== "system") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const fn = () => applyTheme("system");
+    mq.addEventListener("change", fn);
+    return () => mq.removeEventListener("change", fn);
+  }, [theme]);
+  return (
+    <TooltipProvider>
+      {children}
+      <Toaster position="bottom-right" toastOptions={{ className: "!rounded-lg !border !border-line !bg-canvas !text-ink !shadow-pop !font-sans" }} />
+    </TooltipProvider>
+  );
+}
+
+/** Inline script that sets the theme class before first paint. */
+export const THEME_SCRIPT = `(function(){try{var s=JSON.parse(localStorage.getItem('desy:v1')||'{}');var t=(s.settings&&s.settings.theme)||'system';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
