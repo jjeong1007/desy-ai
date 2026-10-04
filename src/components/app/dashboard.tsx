@@ -14,7 +14,7 @@ import { ConfirmDialog } from "@/components/ui/overlay";
 import { Segmented } from "@/components/ui/tabs";
 import { reportFor, useWeights } from "@/lib/hooks";
 import { cn, relTime } from "@/lib/utils";
-import { deleteIdea, resetDemoData } from "@/services/ideas";
+import { deleteIdea } from "@/services/ideas";
 import { useDesy } from "@/store/desy";
 import type { Idea, PursuitBand, Report } from "@/types";
 
@@ -33,7 +33,6 @@ export function Dashboard() {
   const hydrated = useDesy((s) => s.hydrated);
   const ideas = useDesy((s) => s.ideas);
   const remove = useDesy((s) => s.removeIdea);
-  const setIdeas = useDesy((s) => s.setIdeas);
   const weights = useWeights();
   const [view, setView] = useState<"cards" | "table">("cards");
   const [sort, setSort] = useState<SortKey>("score-desc");
@@ -41,7 +40,6 @@ export function Dashboard() {
   const [cappedOnly, setCappedOnly] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [pendingDelete, setPendingDelete] = useState<Idea | null>(null);
-  const [restoring, setRestoring] = useState(false);
 
   const reports = useMemo(() => {
     const map = new Map<string, Report | null>();
@@ -97,26 +95,10 @@ export function Dashboard() {
         <div className="mt-16 flex flex-col items-center px-6 text-center">
           <FolderOpen className="size-8 text-fg-tertiary" strokeWidth={1.25} aria-hidden />
           <h2 className="mt-4 text-page-title font-medium">No ideas just yet.</h2>
-          <p className="mt-3 max-w-md text-sm font-medium text-ink-2">The samples cover a strong pursuit, a promising one, and a weak pursuit that is capped. They show how the gate works.</p>
+          <p className="mt-3 max-w-md text-sm font-medium text-ink-2">Describe a SaaS idea and Desy scores it, shows the evidence, and tells you what to test first.</p>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             <Button asChild variant="primary">
               <Link href="/app/ideas/new">New idea</Link>
-            </Button>
-            <Button
-              disabled={restoring}
-              onClick={async () => {
-                setRestoring(true);
-                try {
-                  setIdeas(await resetDemoData());
-                  toast.success("Sample ideas restored");
-                } catch {
-                  toast.error("Couldn't restore the samples.");
-                } finally {
-                  setRestoring(false);
-                }
-              }}
-            >
-              {restoring ? "Restoring…" : "Restore sample ideas"}
             </Button>
           </div>
         </div>

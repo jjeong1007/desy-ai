@@ -1,5 +1,5 @@
 "use client";
-import { Download, LogOut, RotateCcw, Trash2 } from "lucide-react";
+import { Download, LogOut, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -13,7 +13,6 @@ import { ConfirmDialog } from "@/components/ui/overlay";
 import { Segmented } from "@/components/ui/tabs";
 import { relTime } from "@/lib/utils";
 import { deleteAllData, exportData, saveSettings, signOut } from "@/services/account";
-import { resetDemoData } from "@/services/ideas";
 import { useDesy } from "@/store/desy";
 import type { Settings } from "@/types";
 
@@ -29,12 +28,10 @@ export function AccountSettings() {
   const ideas = useDesy((s) => s.ideas);
   const chats = useDesy((s) => s.chats);
   const setSettings = useDesy((s) => s.setSettings);
-  const setIdeas = useDesy((s) => s.setIdeas);
   const reset = useDesy((s) => s.reset);
   const router = useRouter();
   const [draft, setDraft] = useState<Settings["profile"] | null>(null);
   const [busy, setBusy] = useState(false);
-  const [confirmReset, setConfirmReset] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   // Approximate: the size of the workspace as JSON, which is how it's stored.
   const bytes = useMemo(() => (hydrated ? new Blob([JSON.stringify({ ideas, chats })]).size : null), [hydrated, ideas, chats]);
@@ -149,11 +146,6 @@ export function AccountSettings() {
               <Download /> Download
             </Button>
           </SettingRow>
-          <SettingRow title="Restore sample ideas" description="Replaces your ideas with the three samples. Your account, chats and settings stay.">
-            <Button onClick={() => setConfirmReset(true)}>
-              <RotateCcw /> Restore samples
-            </Button>
-          </SettingRow>
         </div>
       </SettingsSection>
 
@@ -181,22 +173,6 @@ export function AccountSettings() {
         </div>
       </SettingsSection>
 
-      <ConfirmDialog
-        open={confirmReset}
-        onOpenChange={setConfirmReset}
-        title="Restore sample ideas?"
-        description="Your ideas, notes, and research plans are replaced with the three samples. This can't be undone."
-        confirmLabel="Restore samples"
-        onConfirm={async () => {
-          try {
-            setIdeas(await resetDemoData());
-            toast.success("Sample ideas restored");
-          } catch {
-            toast.error("Couldn't restore the samples.");
-          }
-          setConfirmReset(false);
-        }}
-      />
       <ConfirmDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}

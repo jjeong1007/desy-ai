@@ -1,6 +1,6 @@
 "use server";
 import { uid } from "@/lib/utils";
-import { getIdeaRow, getProfile, insertIdea, listIdeaRows, mutateIdea, replaceWithSeeds, type HistoryInput } from "@/server/db";
+import { getIdeaRow, getProfile, insertIdea, listIdeaRows, mutateIdea, type HistoryInput } from "@/server/db";
 import { scoreChange, serverReport } from "@/server/report";
 import { findingStatePatchSchema, historyInputSchema, id as idSchema, intakePatchSchema, intakeSchema, parse } from "@/server/schemas";
 import { requireUser } from "@/server/supabase/server";
@@ -92,10 +92,4 @@ export async function setFindingState(ideaId: string, findingId: string, patch: 
     if (!h) return;
     return { ...h, ...scoreChange(before, serverReport(idea, settings.weights)) };
   });
-}
-
-/** Replaces every idea with the three samples. Chats and settings stay. */
-export async function resetDemoData(): Promise<Idea[]> {
-  const { sb, user } = await requireUser();
-  return replaceWithSeeds(sb, user.id);
 }

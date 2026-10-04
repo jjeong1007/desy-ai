@@ -137,3 +137,34 @@ describe("planner actions", () => {
     expect(saved.plan?.notes.map((n) => n.id)).toEqual(["n1"]);
   });
 });
+
+describe("new founder flow from an empty account", () => {
+  it("drafts, runs, completes, plans and chats without sample data", async () => {
+    const { saveDraft, listIdeas } = await import("@/server/actions/ideas");
+    const { startAnalysis, completeAnalysis } = await import("@/server/actions/analysis");
+    const { createPlan } = await import("@/server/actions/planner");
+    const { startChat, replyTo } = await import("@/server/actions/chat");
+    expect(await listIdeas()).toEqual([]);
+
+    const draft = await saveDraft(null, { ...EMPTY_INTAKE, name: "Booking reminders for dog groomers", oneLiner: "Cut no-shows for solo groomers.", problem: "Groomers lose money every week to no-shows.", targetCustomer: "Independent mobile dog groomers in the US", currentSolution: "Manual texts the night before", solution: "Automatic SMS reminders with one-tap rescheduling.", keyFeatures: "SMS reminders, rescheduling links", price: 19, mrrGoal: 3000, distributionIdeas: "Groomer Facebook groups" }, 5);
+    expect(draft.status).toBe("draft");
+    expect(draft.seed).toBeUndefined();
+
+    const running = await startAnalysis(draft.id);
+    expect(running.status).toBe("running");
+    expect(running.analysis?.findings.length).toBeGreaterThan(0);
+    expect(running.analysis?.partialFailure).toBeNull();
+
+    const done = await completeAnalysis(draft.id);
+    expect(done.status).toBe("complete");
+    expect(done.history[0].scoreAfter).toBeTypeOf("number");
+
+    const planned = await createPlan(draft.id, "discovery");
+    expect(planned.plan?.script.length).toBeGreaterThan(0);
+
+    const chat = await startChat("How is the dog groomer idea doing?", draft.id);
+    const replied = await replyTo(chat.id);
+    expect(replied.messages.at(-1)?.role).toBe("assistant");
+    expect(replied.messages.at(-1)?.content).toContain("Booking reminders for dog groomers");
+  });
+});

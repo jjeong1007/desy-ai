@@ -4,7 +4,6 @@ export {
   deleteIdea,
   getIdea,
   listIdeas,
-  resetDemoData,
   saveDraft,
   updateIntake,
 } from "@/server/actions/ideas";
