@@ -7,7 +7,7 @@ import { Tag } from "@/components/ui/tag";
 import { money } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
-const plans = [
+export const PLANS = [
   {
     name: "Free",
     price: 0,
@@ -40,7 +40,7 @@ export function PricingBlock({ heading = "section" }: { heading?: "section" | "p
           lead="Placeholder tiers. There is no checkout. Creating an account opens the full demo, including unlimited ideas."
         />
         <div className="mx-auto grid w-full max-w-[860px] gap-4 md:grid-cols-2">
-          {plans.map((p, i) => (
+          {PLANS.map((p, i) => (
             <Reveal key={p.name} delay={i * 100}>
               <div className={cn("flex h-full flex-col gap-6 rounded-lg border border-line bg-canvas p-6", p.popular && "shadow-card")}>
                 <div className="flex flex-col gap-2">

@@ -102,7 +102,7 @@ export function IdeaSwitcher({ currentId, className }: { currentId?: string; cla
                     {i.status === "complete" && r ? (
                       <span className="flex shrink-0 items-center gap-2">
                         <span className="tnum font-semibold">{r.score.overall}</span>
-                        <BandBadge band={r.score.band} size="sm" />
+                        <BandBadge band={r.score.band} score={r.score} size="sm" />
                       </span>
                     ) : (
                       <span className="shrink-0 text-xs capitalize text-fg-tertiary">{i.status}</span>

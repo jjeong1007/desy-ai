@@ -18,16 +18,13 @@ function topTerm(idea: Idea) {
 }
 
 export function frameworkLogs(report: Report): string[] {
-  const logs: string[] = ["Phase 1: Scoring 5 filters (25 criteria)…"];
+  const logs: string[] = ["Phase 1: Scoring the opportunity…"];
   for (const f of report.filters) {
-    const scored = 5 - f.unscoredCount;
-    logs.push(`${FILTER_SHORT[f.id]} filter: ${scored} of 5 criteria scored${f.unscoredCount ? `, ${f.unscoredCount} need${f.unscoredCount > 1 ? "" : "s"} evidence` : ""} → ${f.score ?? "no score"}`);
+    logs.push(`${FILTER_SHORT[f.id]}: ${f.score ?? "needs evidence"}`);
   }
-  logs.push("Phase 2: Applying Real / Win / Worth It…");
+  logs.push("Phase 2: Assessing the opportunity…");
   for (const p of report.pillars) {
-    const flagged = p.questions.find((q) => q.answer === "no") ?? p.questions.find((q) => q.answer === "maybe");
-    logs.push(`${PILLAR_BY_ID[p.id].label}: ${p.net === "yes" ? "Yes" : p.net === "no" ? "No" : "Probably"}${flagged ? ` ('${flagged.text.split(" (")[0]}' → ${flagged.answer === "no" ? "No" : "Maybe"})` : ""}`);
-    if (p.cappedReason) logs.push(p.cappedReason);
+    logs.push(`${PILLAR_BY_ID[p.id].label}: ${p.net === "yes" ? "Yes" : p.net === "no" ? "No" : "Probably"}`);
   }
   logs.push("Phase 3: Computing Desy Score and pursuit band…");
   logs.push(`Desy Score ${report.score.overall} → ${BAND_SHORT[report.score.uncappedBand]} by score`);

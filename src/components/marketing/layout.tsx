@@ -24,6 +24,19 @@ export function useInView<T extends Element>(threshold = 0.25) {
   return [ref, inView] as const;
 }
 
+/** True when the visitor asked the OS for less motion. */
+export function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const on = (e: MediaQueryListEvent) => setReduced(e.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return reduced;
+}
+
 /** Fades content up as it enters the viewport. */
 export function Reveal({ children, className, delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
   const [ref, inView] = useInView<HTMLDivElement>(0.15);

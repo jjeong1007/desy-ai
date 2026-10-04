@@ -1,54 +1,26 @@
 "use client";
-import { ClipboardList, FileText, Home, MessageCircle, Search, Settings } from "lucide-react";
+import { ChevronLeft, ClipboardList, FileText, FlaskConical, House, Lightbulb, MessageCircle, MessagesSquare, Moon, Plus, RefreshCw, Search, Settings } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { SCORING_CONFIG } from "@/config/scoring";
 import { MarketingShell } from "@/components/marketing/site-chrome";
 import { ActionPlanVisual, CitedFindingVisual, IdeaScoreVisual } from "@/components/marketing/scoring-visuals";
+import { McpNetworkVisual, SourcesNetworkVisual } from "@/components/marketing/network-visuals";
 import { Container, DemoFrame, FeatureRow, Reveal, SectionHeader, useInView } from "@/components/marketing/layout";
 import { Accordion } from "@/components/marketing/parts";
 import { HeroDots } from "@/components/marketing/hero-dots";
+import { DescribeDemo, ResearchDemo } from "@/components/marketing/workflow-demos";
 import { PricingBlock } from "@/components/marketing/pricing-block";
 import { ScoreHeader } from "@/components/report/score-header";
-import { SentimentTag } from "@/components/report/markers";
-import { SourceLabel } from "@/components/sources/data-sources";
+import { IDEA_TABS, OverviewDashboard } from "@/components/report/idea-pages";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
-import { NavItem, NavSection, Sidebar, TeamSwitcher } from "@/components/ui/navigation";
+import { NavItem, NavSection, Sidebar } from "@/components/ui/navigation";
+import { Kbd } from "@/components/ui/field";
 import { Logo } from "@/components/logo";
 import { SAMPLE_IDEA, SAMPLE_REPORT } from "@/lib/sample";
 import { cn } from "@/lib/utils";
+import { FAQ } from "@/config/faq";
 
-const FAQ = [
-  {
-    question: "How accurate is a Desy Score?",
-    answer: "The score is only as solid as the evidence behind it. Each of 25 criteria is scored 0–4 from findings, or left as Needs evidence when nothing supports it. Thin evidence lowers confidence and can cap the pursuit band. This demo replays realistic sample findings, so treat a score here as a worked example of the method.",
-  },
-  {
-    question: "Which sources does Desy use?",
-    answer: "The product is built to read community forums, open-source repositories, product directories and review sites, search-trend data, and startup and funding news. Paid or licensed databases are not named until access is confirmed. This demo does not call those sources.",
-  },
-  {
-    question: "Who is it for?",
-    answer: "Solo founders and very small teams who want a small, profitable SaaS, enough monthly revenue to eventually leave a job. You can write the code, use AI or no-code tools, or hire a developer. The intake asks which, and the Economic filter and the Win and Worth It checks use that answer.",
-  },
-  {
-    question: "How are the score and the bands calculated?",
-    answer: `Five filters — Customer, Economic, Competition, Channel, and Timing — each score 0–100. The Desy Score is their weighted average, equal weights by default. Strong pursuit is ${SCORING_CONFIG.bands.strongMin}–100, Promising is ${SCORING_CONFIG.bands.promisingMin}–${SCORING_CONFIG.bands.strongMin - 1}, and Weak is 0–${SCORING_CONFIG.bands.promisingMin - 1}. Real / Win / Worth It is a separate gate. It never changes the number. A No caps the band at Weak. A filter below ${SCORING_CONFIG.knockoutBelow}, or one with too little evidence, caps it at Promising.`,
-  },
-  {
-    question: "What do I do after I get a score?",
-    answer: "The report lists the next three things to do, a few narrower directions, and the assumptions that still need evidence. The Research Planner turns those into a customer-discovery script or a pitch. After you talk to people, you paste notes, synthesize them, and apply an update that recalculates the score.",
-  },
-  {
-    question: "Can a decent score still be a weak pursuit?",
-    answer: "Yes. That is what the gate is for. One of the sample ideas, a generic AI note-taking app, lands in the Promising range on the number because Timing and Customer look fine. Competition is a knockout and Win is No, so the band is capped at Weak. The score alone would have been misleading.",
-  },
-  {
-    question: "What happens to my data?",
-    answer: "In this demo there is no account server. Ideas, notes, and settings stay in your browser. Signing out keeps them on this device. Clearing site data removes them. A future backend can replace the service layer without changing the screens.",
-  },
-];
 
 const steps = [
   { icon: <FileText />, title: "Describe", body: "The customer, the workaround, the price, your MRR goal, and how it will get built.", meta: "A few minutes" },
@@ -90,37 +62,92 @@ function workflowDemoVisible(i: number, active: number, transition: DemoTransiti
   return false;
 }
 
+const PREVIEW_RECENT = ["Invoice reminders for freelance designers", "Scheduling for independent tutors", "Generic AI note-taking app"];
+
+/** Static replica of the app's idea workspace (shell + Overview tab) rendered from the sample report. */
 function AppPreview() {
   return (
-    <div className="relative h-[563px] overflow-hidden rounded-xl border border-line bg-canvas shadow-card">
-      <div className="flex h-full flex-col">
-        <div className="flex h-topnav shrink-0 items-center justify-between gap-6 border-b border-line bg-canvas px-6">
+    <div className="relative h-[563px] overflow-hidden rounded-xl border border-line bg-canvas shadow-card md:h-[680px]" role="img" aria-label={`Desy workspace showing the Overview of "${SAMPLE_IDEA.intake.name}": a Desy Score of ${SAMPLE_REPORT.score.overall}, scoring breakdown, and recommendations`}>
+      <div className="flex h-full flex-col" inert aria-hidden>
+        <div className="flex h-topnav shrink-0 items-center justify-between gap-6 border-b border-line bg-canvas px-4 md:px-6">
           <div className="flex min-w-0 flex-1 items-center gap-3">
-            <Logo href="/" />
-            <div className="hidden h-[33px] min-w-0 max-w-[521px] flex-1 items-center rounded-sm border border-line px-4 text-body text-fg-tertiary sm:flex">Search ideas</div>
+            <Logo />
+            <div className="hidden h-[33px] min-w-0 max-w-[521px] flex-1 items-center justify-between gap-2 rounded-sm border border-line px-4 text-body text-fg sm:flex">
+              <span className="flex min-w-0 items-center gap-2">
+                <Search className="size-4 shrink-0 text-fg-secondary" />
+                <span className="truncate">{SAMPLE_IDEA.intake.name}</span>
+              </span>
+              <span className="hidden shrink-0 items-center gap-1 lg:flex">
+                <Kbd>⌘</Kbd>
+                <Kbd>K</Kbd>
+              </span>
+            </div>
           </div>
-          <Avatar size="lg" name="Alex Rivera" />
+          <div className="flex items-center gap-4">
+            <span className="hidden size-9 items-center justify-center text-fg-secondary sm:flex">
+              <Moon className="size-4" />
+            </span>
+            <span className="hidden items-center gap-1.5 text-body font-medium text-fg sm:flex">
+              <Plus className="size-4" /> New idea
+            </span>
+            <Avatar size="lg" name="Alex Rivera" />
+          </div>
         </div>
         <div className="flex min-h-0 flex-1">
-          <Sidebar
-            className="hidden md:flex"
-            header={<TeamSwitcher name="Desy" />}
-            footer={
-              <>
-                <NavItem href="#faq" icon={<MessageCircle />}>Give feedback</NavItem>
-                <NavItem href="/app/settings" icon={<Settings />}>Settings</NavItem>
-              </>
-            }
-          >
-            <NavSection>
-              <NavItem href="#top" icon={<Home />} active>Home</NavItem>
-            </NavSection>
-            <NavSection label="Ideas">
-              <NavItem href="#scoring" icon={<ClipboardList />}>How scoring works</NavItem>
-            </NavSection>
-          </Sidebar>
-          <div className="min-w-0 flex-1 overflow-hidden bg-muted p-6 md:p-8">
-            <ScoreHeader report={SAMPLE_REPORT} compact headingId="hero-score" />
+          <div className="hidden w-sidebar shrink-0 border-r border-line-strong/25 md:block">
+            <Sidebar
+              className="!w-full border-r-0"
+              footer={
+                <>
+                  <NavItem icon={<MessageCircle />}>Give feedback</NavItem>
+                  <NavItem icon={<Settings />}>Settings</NavItem>
+                </>
+              }
+            >
+              <NavSection>
+                <NavItem icon={<House />}>Home</NavItem>
+                <NavItem icon={<MessagesSquare />}>Chat</NavItem>
+                <NavItem icon={<Lightbulb />}>Ideas</NavItem>
+                <NavItem icon={<FlaskConical />}>Research Planner</NavItem>
+              </NavSection>
+              <NavSection label="Recent ideas">
+                {PREVIEW_RECENT.map((name, i) => (
+                  <NavItem key={name} icon={<FileText />} active={i === 0}>
+                    <span className="truncate">{name}</span>
+                  </NavItem>
+                ))}
+              </NavSection>
+            </Sidebar>
+          </div>
+          <div className="min-w-0 flex-1 overflow-hidden px-4 py-6 md:px-6">
+            <span className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-ink-2">
+              <ChevronLeft className="size-4" /> Back to all ideas
+            </span>
+            <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-page-title font-semibold">{SAMPLE_IDEA.intake.name}</p>
+                <p className="mt-2 max-w-[70ch] text-sm font-medium text-ink-2">{SAMPLE_IDEA.intake.oneLiner}</p>
+              </div>
+              <div className="hidden flex-wrap gap-2 lg:flex">
+                <Button size="sm" variant="primary" tabIndex={-1}>
+                  <RefreshCw /> Re-run analysis
+                </Button>
+                <Button size="sm" tabIndex={-1}>
+                  <FlaskConical /> Research plan
+                </Button>
+              </div>
+            </div>
+            <div className="-mx-1 mt-6 flex items-center gap-1 overflow-hidden border-b border-line px-1 pb-2">
+              {IDEA_TABS.map((t) => (
+                <span key={t.id} className={cn("flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded px-3 py-2 text-sm font-medium", t.id === "overview" ? "bg-accent-tint text-accent" : "text-ink-2")}>
+                  {t.label}
+                  {t.id === "sources" ? <span className="tnum text-xs text-fg-tertiary">{SAMPLE_IDEA.analysis?.findings.length}</span> : null}
+                </span>
+              ))}
+            </div>
+            <div className="mt-6">
+              <OverviewDashboard idea={SAMPLE_IDEA} report={SAMPLE_REPORT} go={() => {}} />
+            </div>
           </div>
         </div>
       </div>
@@ -135,7 +162,6 @@ function Workflow() {
   const prevActive = useRef(0);
   const [intro, setIntro] = useState(true);
   const [transition, setTransition] = useState<DemoTransition | null>(null);
-  const findings = (SAMPLE_IDEA.analysis?.findings ?? []).slice(0, 3);
 
   useEffect(() => {
     const t = setTimeout(() => setIntro(false), DEMO_FADE_IN_MS);
@@ -227,36 +253,12 @@ function Workflow() {
                   inert={!workflowDemoVisible(i, active, transition, intro)}
                   aria-hidden={!workflowDemoVisible(i, active, transition, intro)}
                 >
-                  <DemoFrame label={`${s.title} preview`} background="/marketing/feature-dunes.png" windowClassName="border-0 bg-transparent p-0 shadow-none">
-                    {i === 0 && (
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        {[
-                          ["Customer", SAMPLE_IDEA.intake.targetCustomer],
-                          ["Problem", SAMPLE_IDEA.intake.problem],
-                          ["Price", `$${SAMPLE_IDEA.intake.price}/mo`],
-                          ["MRR goal", `$${SAMPLE_IDEA.intake.mrrGoal.toLocaleString("en-US")}`],
-                        ].map(([label, value]) => (
-                          <div key={String(label)} className="flex flex-col gap-1 rounded-lg border border-line bg-canvas p-4">
-                            <span className="text-small font-medium text-fg-tertiary">{label}</span>
-                            <span className="text-body font-medium text-fg">{value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {i === 1 && (
-                      <ul className="m-0 flex list-none flex-col divide-y divide-line rounded-lg border border-line bg-canvas p-0">
-                        {findings.map((f) => (
-                          <li key={f.id} className="px-4 py-3">
-                            <div className="flex items-center justify-between gap-2">
-                              <SourceLabel sourceId={f.sourceId} />
-                              <SentimentTag s={f.sentiment} />
-                            </div>
-                            <p className="m-0 mt-1 text-body font-medium text-fg">{f.title}</p>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                  <DemoFrame label={`${s.title} preview`} background="/marketing/feature-dunes.png" className="h-full" windowClassName="flex flex-col border-0 bg-transparent p-0 shadow-none">
+                    <div className="glass-panel flex flex-1 flex-col justify-center rounded-lg p-3 sm:p-4">
+                    {i === 0 && <DescribeDemo playing={inView && i === active} />}
+                    {i === 1 && <ResearchDemo playing={inView && i === active} />}
                     {i === 2 && <ScoreHeader report={SAMPLE_REPORT} compact headingId="workflow-score" />}
+                    </div>
                   </DemoFrame>
                 </div>
               ))}
@@ -275,9 +277,9 @@ export function LandingPage() {
         <HeroDots className="pointer-events-none absolute inset-0 -z-10 size-full [mask-image:linear-gradient(to_bottom,black_40%,transparent_85%)]" />
         <Container>
           <Reveal className="flex max-w-[891px] flex-col items-start gap-8">
-            <h1 className="m-0 text-page-title font-medium text-fg md:text-display-sm lg:text-display">Know whether your idea is worth building before you build it.</h1>
+            <h1 className="m-0 text-page-title font-medium text-fg md:text-display-sm lg:text-display">De-risk your idea before wasting 6 months on it.</h1>
             <p className="m-0 max-w-[764px] text-heading font-medium text-fg-secondary">
-              You want reliable monthly revenue, enough to leave a 9-to-5, whether you write the code or not. Desy gathers evidence, scores the opportunity, and tells you what to test before you spend months building.
+              Before tackling a new idea for the next 6 months, de-risk it through Desy by benchmarking your idea. Desy gathers data, scores the opportunity, and tells you what to test before you spend months building.
             </p>
             <Button asChild size="lg" variant="primary">
               <Link href="/sign-up">Validate an idea</Link>
@@ -343,7 +345,21 @@ export function LandingPage() {
             lead="Desy obtains real market data to benchmark and evaluate your idea by running different agents to scrape the web to find real evidence. Furthermore, it contains knowledge and skills from product managers that are constantly thinking about scaling new products."
           />
           <Reveal>
-            <div aria-hidden className="aspect-[1232/555] w-full rounded-xl bg-placeholder" />
+            <SourcesNetworkVisual />
+          </Reveal>
+        </Container>
+      </section>
+
+      <section id="integrations" className="scroll-mt-24 py-12 md:py-24">
+        <Container className="flex flex-col gap-12">
+          <SectionHeader
+            className="max-w-[907px]"
+            eyebrow="MCP"
+            title="Your agents get the full picture"
+            lead="Desy connects to the tools you already work in through MCP. Cursor, Claude, ChatGPT, and the rest of your agents can read your ideas, scores, findings, and interview notes, so they build with the same context you have."
+          />
+          <Reveal>
+            <McpNetworkVisual />
           </Reveal>
         </Container>
       </section>

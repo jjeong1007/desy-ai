@@ -12,8 +12,7 @@ import { cn, money } from "@/lib/utils";
 import { createFromAlternative, updateIntake } from "@/services/ideas";
 import { useDesy } from "@/store/desy";
 import type { Idea, Report } from "@/types";
-import { FrameworkTag } from "./framework-tag";
-import { AnswerPill, CriterionDots, LowConfidence, NeedsEvidence } from "./markers";
+import { AnswerPill, LowConfidence, NeedsEvidence } from "./markers";
 import { EvidenceLinks } from "./sections";
 
 // ------------------------------------------------------------------ Path to MRR
@@ -47,7 +46,6 @@ export function PathToMrr({ idea, report }: { idea: Idea; report: Report }) {
     }, 700);
   };
 
-  const sizable = report.filters.find((f) => f.id === "customer")!.criteria.find((c) => c.id === "cust.sizable")!;
   const money_ = report.pillars.find((x) => x.id === "worthIt")!.questions.find((q) => q.id === "worth.money")!;
   const ratio = p.ratio ?? 0;
   const needPct = p.obtainable ? Math.min(100, (p.customersNeeded / p.obtainable) * 100) : 0;
@@ -103,19 +101,9 @@ export function PathToMrr({ idea, report }: { idea: Idea; report: Report }) {
               </p>
             </div>
           ) : null}
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            <div className="rounded border border-line p-3">
-              <p className="text-xs text-fg-tertiary">Feeds Customer → Sizable customer base</p>
-              <div className="mt-1.5"><CriterionDots score={sizable.score} /></div>
-            </div>
-            <div className="rounded border border-line p-3">
-              <p className="text-xs text-fg-tertiary">Feeds Worth It → Will it make money?</p>
-              <div className="mt-1.5"><AnswerPill answer={money_.answer} /></div>
-            </div>
-          </div>
-          <div className="mt-3 flex gap-1">
-            <FrameworkTag id="market-sizing" />
-            <FrameworkTag id="channels" />
+          <div className="mt-4 flex items-center gap-2 rounded border border-line p-3">
+            <span className="text-xs text-fg-tertiary">Worth It</span>
+            <AnswerPill answer={money_.answer} />
           </div>
         </div>
       </div>
@@ -146,7 +134,7 @@ export function ChannelList({ idea }: { idea: Idea }) {
             <div className="min-w-0">
               <p className="text-sm font-medium text-ink">{c.name}</p>
               <p className="mt-0.5 text-[13px] leading-relaxed text-ink-2">{c.reason}</p>
-              <div className="mt-1.5"><EvidenceLinks ids={c.findingIds} idea={idea} max={2} /></div>
+              <div className="mt-1.5"><EvidenceLinks ids={c.findingIds} idea={idea} /></div>
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
@@ -253,10 +241,10 @@ export function Recommendations({ idea, report }: { idea: Idea; report: Report }
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <h3 className="text-base font-semibold">Key assumptions to test</h3>
-            <p className="mt-0.5 text-[13px] text-ink-2">Every Needs evidence criterion, Low confidence filter, and Maybe answer. {assumptions.length} in total.</p>
+            <p className="mt-0.5 text-[13px] text-ink-2">What still needs evidence. {assumptions.length} in total.</p>
           </div>
           <Button asChild size="sm" variant="primary">
-            <Link href={`/app/ideas/${idea.id}?tab=planner`}>
+            <Link href={`/app/planner/${idea.id}`}>
               <FlaskConical /> Plan research
             </Link>
           </Button>
@@ -264,7 +252,7 @@ export function Recommendations({ idea, report }: { idea: Idea; report: Report }
         <ul className="mt-3 divide-y divide-line rounded-lg border border-line bg-canvas">
           {assumptions.map((a) => (
             <li key={a.id}>
-              <Link href={`/app/ideas/${idea.id}?tab=planner`} className="flex items-start justify-between gap-3 px-4 py-3 hover:bg-surface">
+              <Link href={`/app/planner/${idea.id}`} className="flex items-start justify-between gap-3 px-4 py-3 hover:bg-surface">
                 <span className="min-w-0">
                   <span className="flex flex-wrap items-center gap-2 text-sm font-medium text-ink">
                     {a.label}

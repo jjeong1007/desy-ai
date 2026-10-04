@@ -70,11 +70,11 @@ export function Sidebar({ header, footer, children, className }: { header?: Reac
 }
 
 /** TopNav — Figma component "Top Nav" (130:588). `search` and `actions` slot product controls into the same bar. */
-export function TopNav({ credits, avatar, search, actions, className }: { credits?: number; avatar?: ReactNode; search?: ReactNode; actions?: ReactNode; className?: string }) {
+export function TopNav({ credits, avatar, search, actions, className, logoClassName }: { credits?: number; avatar?: ReactNode; search?: ReactNode; actions?: ReactNode; className?: string; logoClassName?: string }) {
   return (
     <header className={cn("flex h-topnav shrink-0 items-center justify-between gap-6 border-b border-line bg-canvas px-6", className)}>
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <Logo href="/app" />
+        <Logo href="/app" className={logoClassName} />
         {search ?? <SearchInput className="w-full max-w-[521px]" />}
       </div>
       <div className="flex items-center gap-4">

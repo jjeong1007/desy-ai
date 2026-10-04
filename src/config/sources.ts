@@ -7,19 +7,19 @@ import type { SourceCategory, SourceDef } from "@/types";
  * SEC EDGAR is intentionally excluded: small private SaaS competitors rarely file.
  */
 export const SOURCES: SourceDef[] = [
-  { id: "reddit", name: "Reddit", category: "Community forums", agentId: "community", accessConfirmed: false },
-  { id: "hackernews", name: "Hacker News", category: "Community forums", agentId: "community", accessConfirmed: false },
+  { id: "reddit", name: "Reddit", category: "Community forums", agentId: "community", accessConfirmed: false, logo: "/marketing/sources/reddit.svg" },
+  { id: "hackernews", name: "Hacker News", category: "Community forums", agentId: "community", accessConfirmed: false, logo: "/marketing/sources/hackernews.svg" },
   { id: "indiehackers", name: "Indie Hackers", category: "Community forums", agentId: "community", accessConfirmed: false },
-  { id: "github", name: "GitHub", category: "Open-source repositories", agentId: "builder", accessConfirmed: false },
+  { id: "github", name: "GitHub", category: "Open-source repositories", agentId: "builder", accessConfirmed: false, logo: "/marketing/sources/logo-4.png", logoMono: true },
   { id: "builders", name: "AI and no-code builders", category: "Builder platforms", agentId: "builder", accessConfirmed: false },
-  { id: "producthunt", name: "Product Hunt", category: "Product directories and review sites", agentId: "competitor", accessConfirmed: false },
-  { id: "g2", name: "G2", category: "Product directories and review sites", agentId: "competitor", accessConfirmed: false },
+  { id: "producthunt", name: "Product Hunt", category: "Product directories and review sites", agentId: "competitor", accessConfirmed: false, logo: "/marketing/sources/producthunt.svg" },
+  { id: "g2", name: "G2", category: "Product directories and review sites", agentId: "competitor", accessConfirmed: false, logo: "/marketing/sources/logo-1.png" },
   { id: "crunchbase", name: "Crunchbase", category: "Licensed market databases", agentId: "competitor", accessConfirmed: false },
   { id: "pitchbook", name: "PitchBook", category: "Licensed market databases", agentId: "competitor", accessConfirmed: false },
   { id: "statista", name: "Statista", category: "Licensed market databases", agentId: "market", accessConfirmed: false },
   { id: "googletrends", name: "Google Trends", category: "Search-trend data", agentId: "market", accessConfirmed: false },
   { id: "techcrunch", name: "TechCrunch", category: "Startup and funding news", agentId: "signal", accessConfirmed: false },
-  { id: "linkedin", name: "LinkedIn", category: "Startup and funding news", agentId: "signal", accessConfirmed: false },
+  { id: "linkedin", name: "LinkedIn", category: "Startup and funding news", agentId: "signal", accessConfirmed: false, logo: "/marketing/sources/linkedin.svg" },
   { id: "interviews", name: "Your interviews", category: "Founder research", agentId: "founder", accessConfirmed: true },
 ];
 

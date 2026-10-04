@@ -48,6 +48,8 @@ export interface PillarDef {
   id: PillarId;
   label: string;
   question: string;
+  /** Plain-language meaning of the pillar, shown on the Opportunity Assessment tab. */
+  definition: string;
   fit: string;
   drawsOn: FilterId[];
 }
@@ -418,6 +420,8 @@ export interface Settings {
   reducedMotionRuns: boolean;
   /** Demo control for the agent run: random (~30%), always, or never return a partial agent failure. */
   partialFailure: "random" | "always" | "never";
+  /** AI tools connected over MCP (simulated in the demo), by id from config/integrations. */
+  integrations: string[];
 }
 
 export interface Session {
@@ -432,6 +436,10 @@ export interface SourceDef {
   category: SourceCategory;
   agentId: AgentId | "founder";
   accessConfirmed: boolean;
+  /** Company logo under /public. Sources without one fall back to a category icon. */
+  logo?: string;
+  /** Dark single-colour logo that needs inverting on dark backgrounds. */
+  logoMono?: boolean;
 }
 
 export type SourceCategory =
@@ -451,4 +459,39 @@ export interface KnowledgeEntry {
   explanation: string;
   fromSource: string[];
   desyAssumptions: string[];
+}
+
+// ---------- Chat ----------
+
+/** Something in the workspace a chat reply drew on. Rendered as a chip that links to it. */
+export interface ChatReference {
+  kind: "idea" | "finding";
+  ideaId: string;
+  findingId?: string;
+  label: string;
+}
+
+/** A suggested next move under an assistant reply, e.g. "Validate this idea". */
+export interface ChatAction {
+  label: string;
+  href: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string; // light markdown: paragraphs, "- " bullets, **bold**
+  createdAt: string;
+  references?: ChatReference[];
+  actions?: ChatAction[];
+}
+
+export interface ChatThread {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  /** Idea the conversation is focused on, if the user picked one. */
+  focusIdeaId: string | null;
+  messages: ChatMessage[];
 }

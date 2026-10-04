@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AGENTS, AGENT_NAME } from "@/config/agents";
-import { getSource } from "@/config/sources";
+import { SourceLabel } from "@/components/sources/finding-sheet";
 import { PageSkeleton } from "@/components/app/app-shell";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/field";
@@ -13,7 +13,7 @@ import { completeAnalysis } from "@/services/analysis";
 import { useDesy } from "@/store/desy";
 import type { RunAgentPlan } from "@/types";
 
-type Status = "queued" | "running" | "done" | "failed";
+export type Status = "queued" | "running" | "done" | "failed";
 
 function clock(ms: number) {
   const s = Math.max(0, Math.round(ms / 1000));
@@ -91,7 +91,7 @@ export function AgentRun() {
     return (
       <div className="p-10 text-center">
         <h1 className="text-xl font-semibold">Idea not found</h1>
-        <Button asChild className="mt-4"><Link href="/app">Back to dashboard</Link></Button>
+        <Button asChild className="mt-4"><Link href="/app/ideas">Back to ideas</Link></Button>
       </div>
     );
   }
@@ -130,7 +130,7 @@ export function AgentRun() {
       ) : null}
       {partial ? (
         <p role="status" className="mt-3 rounded border border-lowconf/30 bg-lowconf-tint px-3 py-2 text-sm text-lowconf">
-          {AGENT_NAME[partial.agent.id]} returned partial results. Criteria it couldn&apos;t cover will show Needs evidence, and a low-confidence filter can cap the band.
+          {AGENT_NAME[partial.agent.id]} returned partial results. Some areas will show Needs evidence.
         </p>
       ) : null}
       <ul className="mt-6 grid gap-3 lg:grid-cols-2">
@@ -147,7 +147,11 @@ export function AgentRun() {
                 <StatusBadge status={status} />
               </div>
               {meta && meta.sourceIds.length ? (
-                <p className="mt-2 text-xs text-fg-tertiary">{meta.sourceIds.map((s) => getSource(s).name).join(" · ")}</p>
+                <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-fg-tertiary">
+                  {meta.sourceIds.map((s) => (
+                    <SourceLabel key={s} sourceId={s} className="font-normal text-fg-tertiary" />
+                  ))}
+                </p>
               ) : (
                 <p className="mt-2 text-xs text-fg-tertiary">Runs after the research agents</p>
               )}
@@ -169,7 +173,7 @@ export function AgentRun() {
   );
 }
 
-function StatusBadge({ status }: { status: Status }) {
+export function StatusBadge({ status }: { status: Status }) {
   const cls = {
     queued: "bg-surface text-ink-2",
     running: "bg-accent-tint text-accent-strong",

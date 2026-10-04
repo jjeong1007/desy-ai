@@ -1,8 +1,5 @@
-import type { Metadata } from "next";
-import { SettingsPage } from "@/components/app/settings-form";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = { title: "Settings" };
-
-export default function SettingsRoute() {
-  return <SettingsPage />;
+export default function SettingsIndex() {
+  redirect("/app/settings/account");
 }

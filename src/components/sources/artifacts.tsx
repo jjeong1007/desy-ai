@@ -1,19 +1,15 @@
 "use client";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { FrameworkTag } from "@/components/report/framework-tag";
 import { getSource } from "@/config/sources";
 import { compact, money } from "@/lib/utils";
 import type { Idea, Report } from "@/types";
 
-function Artifact({ title, feeds, children, tag }: { title: string; feeds: string; children: React.ReactNode; tag?: string }) {
+function Artifact({ title, feeds, children }: { title: string; feeds: string; children: React.ReactNode }) {
   return (
     <section className="rounded-lg border border-line bg-canvas" aria-label={title}>
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3">
         <h3 className="text-sm font-semibold">{title}</h3>
-        <span className="flex items-center gap-2">
-          <span className="rounded bg-surface px-1.5 py-0.5 text-[11px] text-ink-2">Feeds {feeds}</span>
-          {tag ? <FrameworkTag id={tag} /> : null}
-        </span>
+        <span className="rounded bg-surface px-1.5 py-0.5 text-[11px] text-ink-2">Feeds {feeds}</span>
       </div>
       <div className="p-4">{children}</div>
     </section>
@@ -25,7 +21,7 @@ export function Artifacts({ idea, report }: { idea: Idea; report: Report }) {
   const p = report.pathToMrr;
   return (
     <div className="grid gap-4">
-      <Artifact title="Competitor matrix" feeds="Competition filter">
+      <Artifact title="Competitor matrix" feeds="Competition">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-[13px]">
             <thead className="text-xs text-fg-tertiary">
@@ -48,7 +44,7 @@ export function Artifacts({ idea, report }: { idea: Idea; report: Report }) {
         <p className="mt-2 text-xs text-fg-tertiary">Competitor names are fictional in this demo.</p>
       </Artifact>
 
-      <Artifact title="Market-sizing worksheet" feeds="Customer → Sizable customer base" tag="market-sizing">
+      <Artifact title="Market-sizing worksheet" feeds="Customer">
         <div className="grid gap-4 md:grid-cols-2">
           {(["topDown", "bottomUp"] as const).map((k) => {
             const m = a.market[k];
@@ -75,7 +71,7 @@ export function Artifacts({ idea, report }: { idea: Idea; report: Report }) {
         </p>
       </Artifact>
 
-      <Artifact title={`Search trend: "${a.trend.term}"`} feeds="Timing filter">
+      <Artifact title={`Search trend: "${a.trend.term}"`} feeds="Timing">
         {a.trend.points.length === 0 ? (
           <p className="rounded border border-dashed border-line-strong p-6 text-center text-[13px] text-ink-2">No trend data: the Market Agent returned partial results. Timing criteria that depend on it show Needs evidence.</p>
         ) : (
@@ -100,7 +96,7 @@ export function Artifacts({ idea, report }: { idea: Idea; report: Report }) {
         )}
       </Artifact>
 
-      <Artifact title="Community pain points" feeds="Customer filter" tag="jtbd">
+      <Artifact title="Community pain points" feeds="Customer">
         <ul className="space-y-4">
           {a.painPoints.map((pp) => (
             <li key={pp.theme}>
@@ -121,7 +117,7 @@ export function Artifacts({ idea, report }: { idea: Idea; report: Report }) {
         </ul>
       </Artifact>
 
-      <Artifact title="Unit economics" feeds="Economic and Channel filters" tag="wtp">
+      <Artifact title="Unit economics" feeds="Economic and Channel">
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {[
             ["Price", `${money(p.price)}/mo`],

@@ -1,4 +1,7 @@
 "use client";
+import { LogOut } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { FILTERS, FILTER_IDS, soloReadingFor } from "@/config/criteria";
@@ -7,15 +10,17 @@ import { PageSkeleton } from "@/components/app/app-shell";
 import { BandBadge } from "@/components/report/markers";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Switch } from "@/components/ui/field";
-import { ConfirmDialog } from "@/components/ui/overlay";
+import { Avatar } from "@/components/ui/avatar";
+import { SettingRow, SettingsHeader, SettingsSection } from "@/components/settings/settings-shell";
 import { Segmented } from "@/components/ui/tabs";
 import { reportFor, useWeights } from "@/lib/hooks";
 import { applyTheme } from "@/components/theme-toggle";
-import { saveSettings } from "@/services/account";
-import { resetDemoData, updateIdea } from "@/services/ideas";
+import { relTime } from "@/lib/utils";
+import { saveSettings, signOut } from "@/services/account";
+import { updateIdea } from "@/services/ideas";
 import { computeReport, weightsValid } from "@/services/scoring";
 import { useDesy } from "@/store/desy";
-import type { FilterId, Settings } from "@/types";
+import type { FilterId, ScoreResult, Settings } from "@/types";
 
 function redistribute(weights: Record<FilterId, number>, id: FilterId, raw: number): Record<FilterId, number> {
   const next = Math.round(Math.max(0, Math.min(100, raw)));
@@ -48,17 +53,18 @@ function redistribute(weights: Record<FilterId, number>, id: FilterId, raw: numb
   return out;
 }
 
-export function SettingsPage() {
+export function AccountSettings() {
   const hydrated = useDesy((s) => s.hydrated);
   const settings = useDesy((s) => s.settings);
   const ideas = useDesy((s) => s.ideas);
   const setSettings = useDesy((s) => s.setSettings);
   const upsert = useDesy((s) => s.upsertIdea);
-  const setIdeas = useDesy((s) => s.setIdeas);
+  const session = useDesy((s) => s.session);
+  const setSession = useDesy((s) => s.setSession);
+  const router = useRouter();
   const savedWeights = useWeights();
   const [draft, setDraft] = useState<Settings | null>(null);
   const [busy, setBusy] = useState(false);
-  const [confirmReset, setConfirmReset] = useState(false);
 
   const form = draft ?? settings;
   const preview = useMemo(() => {
@@ -123,13 +129,18 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 md:px-6">
-      <h1 className="text-page-title font-semibold">Settings</h1>
-      <p className="mt-1 text-sm text-ink-2">Profile, theme, and the weights behind every Desy Score. Weights are a Desy assumption. The course framework does not specify them.</p>
+    <div>
+      <SettingsHeader title="Account" description="Your profile, how Desy looks, and the weights behind every Desy Score." />
 
-      <section className="mt-8" aria-labelledby="profile-h">
-        <h2 id="profile-h" className="text-lg font-semibold">Profile</h2>
-        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+      <SettingsSection id="profile" title="Profile" description="Shown in your workspace and used to personalize prompts.">
+        <div className="flex items-center gap-4 pb-4">
+          <Avatar size="lg" name={form.profile.name || session?.name} />
+          <div className="flex min-w-0 flex-col">
+            <span className="truncate text-body font-medium text-fg">{form.profile.name || session?.name || "Your name"}</span>
+            <span className="truncate text-small text-fg-secondary">{form.profile.email || session?.email}</span>
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="profile-name">Name</Label>
             <Input id="profile-name" className="mt-1.5" value={form.profile.name} onChange={(e) => patch({ profile: { ...form.profile, name: e.target.value } })} />
@@ -143,37 +154,32 @@ export function SettingsPage() {
             <Input id="profile-role" className="mt-1.5" value={form.profile.role} onChange={(e) => patch({ profile: { ...form.profile, role: e.target.value } })} />
           </div>
         </div>
-      </section>
+      </SettingsSection>
 
-      <section className="mt-8" aria-labelledby="theme-h">
-        <h2 id="theme-h" className="text-lg font-semibold">Theme</h2>
-        <div className="mt-3">
-          <Segmented
-            label="Color theme"
-            value={form.theme}
-            onChange={async (theme) => {
-              patch({ theme });
-              applyTheme(theme);
-              setSettings(await saveSettings({ theme }));
-            }}
-            options={[
-              { id: "light", label: "Light" },
-              { id: "dark", label: "Dark" },
-              { id: "system", label: "System" },
-            ]}
-          />
-        </div>
-      </section>
+      <SettingsSection id="appearance" title="Appearance" description="Applies right away on this device.">
+        <Segmented
+          label="Color theme"
+          value={form.theme}
+          onChange={async (theme) => {
+            patch({ theme });
+            applyTheme(theme);
+            setSettings(await saveSettings({ theme }));
+          }}
+          options={[
+            { id: "light", label: "Light" },
+            { id: "dark", label: "Dark" },
+            { id: "system", label: "System" },
+          ]}
+        />
+      </SettingsSection>
 
-      <section className="mt-8" aria-labelledby="weights-h">
-        <div className="flex flex-wrap items-end justify-between gap-2">
-          <div>
-            <h2 id="weights-h" className="text-lg font-semibold">Scoring weights</h2>
-            <p className="mt-1 max-w-[62ch] text-sm text-ink-2">Equal weights by default; the course framework does not specify weights. Changing one filter redistributes the rest so the total stays 100%.</p>
-          </div>
-          <Button size="sm" onClick={() => patch({ weights: { ...SCORING_CONFIG.defaultWeights } })}>Reset to equal</Button>
-        </div>
-        <ul className="mt-4 space-y-4">
+      <SettingsSection
+        id="weights"
+        title="Scoring weights"
+        description="Equal weights by default. Changing one filter redistributes the rest so the total stays 100%."
+        actions={<Button size="sm" onClick={() => patch({ weights: { ...SCORING_CONFIG.defaultWeights } })}>Reset to equal</Button>}
+      >
+        <ul className="m-0 list-none space-y-4 p-0">
           {FILTERS.map((f) => (
             <li key={f.id}>
               <div className="flex items-center justify-between gap-3">
@@ -200,7 +206,7 @@ export function SettingsPage() {
 
         <div className="mt-4 overflow-x-auto rounded-lg border border-line">
           <table className="w-full min-w-[520px] text-left text-sm">
-            <caption className="border-b border-line px-3 py-2 text-left text-[13px] text-ink-2">Live recalculation with these weights. The score changes when you save. Caps never change the number.</caption>
+            <caption className="border-b border-line px-3 py-2 text-left text-[13px] text-ink-2">Live recalculation with these weights. The score changes when you save.</caption>
             <thead className="text-xs text-ink-2">
               <tr>
                 <th className="px-3 py-2 font-medium" scope="col">Idea</th>
@@ -217,9 +223,9 @@ export function SettingsPage() {
                 preview.map(({ idea, before, after }) => (
                   <tr key={idea.id} className="border-t border-line">
                     <th className="px-3 py-2 text-left font-medium" scope="row">{idea.intake.name}</th>
-                    <td className="px-3 py-2">{before ? <ScoreCell score={before.score.overall} band={before.score.band} capped={before.score.band !== before.score.uncappedBand} /> : "—"}</td>
+                    <td className="px-3 py-2">{before ? <ScoreCell score={before.score.overall} band={before.score.band} result={before.score} /> : "—"}</td>
                     <td className="px-3 py-2">
-                      {after ? <ScoreCell score={after.score.overall} band={after.score.band} capped={after.score.band !== after.score.uncappedBand} changed={!!before && (before.score.overall !== after.score.overall || before.score.band !== after.score.band)} /> : "—"}
+                      {after ? <ScoreCell score={after.score.overall} band={after.score.band} result={after.score} changed={!!before && (before.score.overall !== after.score.overall || before.score.band !== after.score.band)} /> : "—"}
                     </td>
                   </tr>
                 ))
@@ -227,61 +233,60 @@ export function SettingsPage() {
             </tbody>
           </table>
         </div>
-      </section>
+      </SettingsSection>
 
-      <section className="mt-8" aria-labelledby="demo-h">
-        <h2 id="demo-h" className="text-lg font-semibold">Demo preferences</h2>
-        <div className="mt-3 space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-medium">Shorter agent runs</p>
-              <p className="text-xs text-ink-2">Compresses the simulated research run. Useful if you prefer reduced motion.</p>
-            </div>
+      <SettingsSection id="demo" title="Demo preferences" description="Controls for the simulated research run.">
+        <div className="divide-y divide-line">
+          <SettingRow title="Shorter agent runs" description="Compresses the simulated research run. Useful if you prefer reduced motion.">
             <Switch id="motion" label="Shorter agent runs" checked={form.reducedMotionRuns} onCheckedChange={(reducedMotionRuns) => patch({ reducedMotionRuns })} />
-          </div>
-          <div>
-            <Label htmlFor="partial">Partial agent failure</Label>
-            <p id="partial-hint" className="mt-1 text-xs text-ink-2">About 30% of new runs return one partial agent, so you can see a low-confidence cap. Sample ideas keep their curated evidence unless this is set to Always.</p>
-            <Select id="partial" className="mt-2" aria-describedby="partial-hint" value={form.partialFailure} onChange={(e) => patch({ partialFailure: e.target.value as Settings["partialFailure"] })}>
+          </SettingRow>
+          <SettingRow
+            title={<label htmlFor="partial">Partial agent failure</label>}
+            description={<span id="partial-hint">About 30% of new runs return one partial agent, so you can see a low-confidence cap. Sample ideas keep their curated evidence unless this is set to Always.</span>}
+          >
+            <Select id="partial" aria-describedby="partial-hint" value={form.partialFailure} onChange={(e) => patch({ partialFailure: e.target.value as Settings["partialFailure"] })}>
               <option value="random">Random, about 30%</option>
               <option value="always">Always</option>
               <option value="never">Never</option>
             </Select>
-          </div>
+          </SettingRow>
         </div>
-      </section>
+      </SettingsSection>
 
-      <div className="mt-8 flex flex-wrap gap-2">
-        <Button variant="primary" onClick={() => void save()} disabled={busy || !valid}>{busy ? "Saving…" : "Save settings"}</Button>
-        <Button variant="ghost" onClick={() => setDraft(null)} disabled={!draft || busy}>Discard changes</Button>
-      </div>
+      {draft ? (
+        <div className="sticky bottom-0 z-10 -mx-4 flex flex-wrap items-center gap-2 border-t border-line bg-canvas px-4 py-3 md:-mx-8 md:px-8">
+          <span className="mr-auto text-small text-fg-secondary">You have unsaved changes.</span>
+          <Button variant="ghost" onClick={() => setDraft(null)} disabled={busy}>Discard</Button>
+          <Button variant="primary" onClick={() => void save()} disabled={busy || !valid}>{busy ? "Saving…" : "Save changes"}</Button>
+        </div>
+      ) : null}
 
-      <section className="mt-10 border-t border-line pt-6" aria-labelledby="reset-h">
-        <h2 id="reset-h" className="text-lg font-semibold">Sample data</h2>
-        <p className="mt-1 max-w-[62ch] text-sm text-ink-2">Replaces your ideas with the three samples. Your sign-in and these settings stay.</p>
-        <Button className="mt-3" onClick={() => setConfirmReset(true)}>Restore sample ideas</Button>
-        <ConfirmDialog
-          open={confirmReset}
-          onOpenChange={setConfirmReset}
-          title="Restore sample ideas?"
-          description="Your ideas, notes, and research plans on this device are replaced with the three samples. This can't be undone."
-          confirmLabel="Restore samples"
-          onConfirm={async () => {
-            setIdeas(await resetDemoData());
-            setConfirmReset(false);
-            toast.success("Sample ideas restored");
-          }}
-        />
-      </section>
+      <SettingsSection id="session" title="Session" description={session ? `Signed in as ${session.email} since ${relTime(session.signedInAt)}.` : undefined}>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            onClick={async () => {
+              await signOut();
+              setSession(null);
+              toast.success("Signed out");
+              router.push("/");
+            }}
+          >
+            <LogOut /> Sign out
+          </Button>
+          <Button asChild variant="ghost">
+            <Link href="/app/settings/privacy#delete">Delete all data</Link>
+          </Button>
+        </div>
+      </SettingsSection>
     </div>
   );
 }
 
-function ScoreCell({ score, band, capped, changed }: { score: number; band: "strong" | "promising" | "weak"; capped: boolean; changed?: boolean }) {
+function ScoreCell({ score, band, result, changed }: { score: number; band: "strong" | "promising" | "weak"; result: ScoreResult; changed?: boolean }) {
   return (
     <span className="inline-flex items-center gap-2">
       <span className="tnum font-medium">{score}</span>
-      <BandBadge band={band} capped={capped} size="sm" />
+      <BandBadge band={band} score={result} size="sm" />
       {changed ? <span className="rounded bg-accent-tint px-1.5 py-0.5 text-xs font-medium text-accent-strong">Recalculated</span> : null}
     </span>
   );

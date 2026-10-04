@@ -13,7 +13,7 @@ import { EMPTY_INTAKE, saveDraft, updateIntake } from "@/services/ideas";
 import { useDesy } from "@/store/desy";
 import type { BuildPath, Familiarity, IntakeInput } from "@/types";
 
-const STEPS = [
+export const STEPS = [
   { id: "idea", title: "The idea", blurb: "A name and one sentence a stranger could repeat." },
   { id: "problem", title: "The problem", blurb: "Who has it, and what they do today." },
   { id: "offer", title: "Offer and price", blurb: "What you'd sell, and the path to monthly revenue." },
@@ -21,14 +21,14 @@ const STEPS = [
   { id: "reach", title: "Reach and review", blurb: "Optional context, then run the analysis." },
 ] as const;
 
-const BUILD: { id: BuildPath; label: string; hint: string }[] = [
+export const BUILD: { id: BuildPath; label: string; hint: string }[] = [
   { id: "selfCoded", label: "I'll code it myself", hint: "Judged on your weekly hours." },
   { id: "aiNoCode", label: "AI or no-code tools", hint: "Judged on whether the features fit those tools." },
   { id: "hiredDeveloper", label: "I'll hire a developer", hint: "Judged on the build budget versus your total budget." },
   { id: "notSure", label: "Not sure yet", hint: "Low development costs stays Needs evidence." },
 ];
 
-const FAMILIAR: { id: Familiarity; label: string }[] = [
+export const FAMILIAR: { id: Familiarity; label: string }[] = [
   { id: "iAmOne", label: "I am one" },
   { id: "workedWith", label: "I've worked with them" },
   { id: "talkedToFew", label: "I've talked to a few" },
@@ -100,7 +100,8 @@ export function IntakeForm() {
     loaded.current = key;
     idRef.current = paramId;
     if (!paramId) {
-      setIntake({ ...EMPTY_INTAKE });
+      // Arriving from the Home prompt: seed the one-liner with what they typed.
+      setIntake({ ...EMPTY_INTAKE, oneLiner: params.get("idea")?.trim() ?? "" });
       setStep(0);
       setMissing(false);
       return;
@@ -113,7 +114,7 @@ export function IntakeForm() {
     setIntake({ ...idea.intake });
     setStep(idea.status === "draft" ? Math.min(idea.draftStep ?? 0, STEPS.length - 1) : 0);
     setMissing(false);
-  }, [hydrated, paramId]);
+  }, [hydrated, paramId, params]);
 
   const set = (patch: Partial<IntakeInput>) => setIntake((cur) => ({ ...cur, ...patch }));
 
@@ -242,13 +243,13 @@ export function IntakeForm() {
 
         {step === 1 ? (
           <>
-            <Field id="targetCustomer" label="Who has this problem?" usedIn="Customer filter" example="Solo brand and UI designers billing 3–15 clients a month" error={errors.targetCustomer}>
+            <Field id="targetCustomer" label="Who has this problem?" example="Solo brand and UI designers billing 3–15 clients a month" error={errors.targetCustomer}>
               <Textarea id="targetCustomer" value={intake.targetCustomer} onChange={(e) => set({ targetCustomer: e.target.value })} aria-invalid={!!errors.targetCustomer} aria-describedby={described("targetCustomer", errors)} />
             </Field>
-            <Field id="problem" label="The problem" usedIn="Customer filter, Real" example="They lose hours chasing late invoices and feel awkward following up." error={errors.problem}>
+            <Field id="problem" label="The problem" example="They lose hours chasing late invoices and feel awkward following up." error={errors.problem}>
               <Textarea id="problem" value={intake.problem} onChange={(e) => set({ problem: e.target.value })} aria-invalid={!!errors.problem} aria-describedby={described("problem", errors)} />
             </Field>
-            <Field id="currentSolution" label="How they solve it today" usedIn="Customer filter, Competition filter" example="Calendar reminders and manual follow-up emails." error={errors.currentSolution}>
+            <Field id="currentSolution" label="How they solve it today" example="Calendar reminders and manual follow-up emails." error={errors.currentSolution}>
               <Textarea id="currentSolution" value={intake.currentSolution} onChange={(e) => set({ currentSolution: e.target.value })} aria-invalid={!!errors.currentSolution} aria-describedby={described("currentSolution", errors)} />
             </Field>
           </>
@@ -256,23 +257,23 @@ export function IntakeForm() {
 
         {step === 2 ? (
           <>
-            <Field id="solution" label="Proposed solution" usedIn="Real" example="Connects to their invoicing tool and sends escalating, on-brand reminders." error={errors.solution}>
+            <Field id="solution" label="Proposed solution" example="Connects to their invoicing tool and sends escalating, on-brand reminders." error={errors.solution}>
               <Textarea id="solution" value={intake.solution} onChange={(e) => set({ solution: e.target.value })} aria-invalid={!!errors.solution} aria-describedby={described("solution", errors)} />
             </Field>
             <Field id="keyFeatures" label="Key features" example="Invoice sync, reminder sequences, late-fee rules" error={errors.keyFeatures}>
               <Textarea id="keyFeatures" value={intake.keyFeatures} onChange={(e) => set({ keyFeatures: e.target.value })} aria-invalid={!!errors.keyFeatures} aria-describedby={described("keyFeatures", errors)} />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field id="price" label="Monthly price per customer" usedIn="Economic filter, Path to MRR, Worth It" example="$12" error={errors.price}>
+              <Field id="price" label="Monthly price per customer" example="$12" error={errors.price}>
                 <Input id="price" inputMode="decimal" type="number" min={1} step={1} value={intake.price || ""} onChange={(e) => set({ price: Number(e.target.value) })} aria-invalid={!!errors.price} aria-describedby={described("price", errors)} />
               </Field>
-              <Field id="mrrGoal" label="MRR goal" usedIn="Customer → Sizable customer base, Worth It" example="$3,000, $5,000, or $10,000 a month" error={errors.mrrGoal}>
+              <Field id="mrrGoal" label="MRR goal" example="$3,000, $5,000, or $10,000 a month" error={errors.mrrGoal}>
                 <Input id="mrrGoal" inputMode="decimal" type="number" min={1} step={100} value={intake.mrrGoal || ""} onChange={(e) => set({ mrrGoal: Number(e.target.value) })} aria-invalid={!!errors.mrrGoal} aria-describedby={described("mrrGoal", errors)} />
               </Field>
-              <Field id="timelineMonths" label="Timeline (months)" usedIn="Worth It" example="12" error={errors.timelineMonths}>
+              <Field id="timelineMonths" label="Timeline (months)" example="12" error={errors.timelineMonths}>
                 <Input id="timelineMonths" inputMode="numeric" type="number" min={1} max={60} value={intake.timelineMonths || ""} onChange={(e) => set({ timelineMonths: Number(e.target.value) })} aria-invalid={!!errors.timelineMonths} aria-describedby={described("timelineMonths", errors)} />
               </Field>
-              <Field id="runningCost" label="Running cost per customer / month" usedIn="Economic → Low variable costs" hint="Optional. AI API usage, hosting, no-code fees." error={errors.runningCost}>
+              <Field id="runningCost" label="Running cost per customer / month" hint="Optional. AI API usage, hosting, no-code fees." error={errors.runningCost}>
                 <Input id="runningCost" inputMode="decimal" type="number" min={0} step="0.1" value={intake.runningCost ?? ""} placeholder="0.60" onChange={(e) => set({ runningCost: e.target.value === "" ? null : Number(e.target.value) })} aria-invalid={!!errors.runningCost} aria-describedby={described("runningCost", errors)} />
               </Field>
             </div>
@@ -281,20 +282,20 @@ export function IntakeForm() {
 
         {step === 3 ? (
           <>
-            <Field id="skills" label="Relevant skills or unfair advantage" usedIn="Win" example="You freelanced in this field, or you already have an audience there." error={errors.skills}>
+            <Field id="skills" label="Relevant skills or unfair advantage" example="You freelanced in this field, or you already have an audience there." error={errors.skills}>
               <Textarea id="skills" value={intake.skills} onChange={(e) => set({ skills: e.target.value })} aria-invalid={!!errors.skills} aria-describedby={described("skills", errors)} />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field id="weeklyHours" label="Weekly hours available" usedIn="Win, Worth It" error={errors.weeklyHours}>
+              <Field id="weeklyHours" label="Weekly hours available" error={errors.weeklyHours}>
                 <Input id="weeklyHours" inputMode="numeric" type="number" min={1} max={80} value={intake.weeklyHours || ""} onChange={(e) => set({ weeklyHours: Number(e.target.value) })} aria-invalid={!!errors.weeklyHours} aria-describedby={described("weeklyHours", errors)} />
               </Field>
-              <Field id="budget" label="Budget (USD)" usedIn="Worth It" hint="Tools, ads, and any contractor, for the whole attempt." error={errors.budget}>
+              <Field id="budget" label="Budget (USD)" hint="Tools, ads, and any contractor, for the whole attempt." error={errors.budget}>
                 <Input id="budget" inputMode="decimal" type="number" min={0} step={100} value={intake.budget} onChange={(e) => set({ budget: Number(e.target.value) })} aria-invalid={!!errors.budget} aria-describedby={described("budget", errors)} />
               </Field>
             </div>
             <fieldset>
               <legend className="text-sm font-medium">How will this get built?</legend>
-              <p className="mt-1 text-xs text-fg-tertiary">Required. <span className="rounded bg-surface px-1.5 py-0.5 font-medium text-ink-2">Used in: Economic filter, Win, Worth It</span></p>
+              <p className="mt-1 text-xs text-fg-tertiary">Required.</p>
               <div className="mt-2 grid gap-2" role="radiogroup" aria-invalid={!!errors.buildPath} aria-describedby={errors.buildPath ? "buildPath-err" : undefined}>
                 {BUILD.map((b) => (
                   <label key={b.id} className={cn("flex cursor-pointer gap-3 rounded border px-3 py-2", intake.buildPath === b.id ? "border-accent bg-accent-tint/40" : "border-line")}>
@@ -309,7 +310,7 @@ export function IntakeForm() {
               {errors.buildPath ? <p id="buildPath-err" className="mt-1 text-xs text-weak">{errors.buildPath}</p> : null}
             </fieldset>
             {intake.buildPath === "hiredDeveloper" ? (
-              <Field id="buildBudget" label="Estimated build budget" usedIn="Worth It" hint="Optional. Drag a range or type a number." error={errors.buildBudget}>
+              <Field id="buildBudget" label="Estimated build budget" hint="Optional. Drag a range or type a number." error={errors.buildBudget}>
                 <div className="flex flex-col gap-2">
                   <input
                     type="range"
@@ -328,7 +329,6 @@ export function IntakeForm() {
             ) : null}
             <fieldset>
               <legend className="text-sm font-medium">How well do you know these customers?</legend>
-              <p className="mt-1 text-xs text-fg-tertiary"><span className="rounded bg-surface px-1.5 py-0.5 font-medium text-ink-2">Used in: Win</span></p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2" role="radiogroup" aria-describedby={errors.familiarity ? "familiarity-err" : undefined}>
                 {FAMILIAR.map((f) => (
                   <label key={f.id} className={cn("flex cursor-pointer items-center gap-2 rounded border px-3 py-2 text-sm", intake.familiarity === f.id ? "border-accent bg-accent-tint/40" : "border-line")}>
@@ -344,13 +344,13 @@ export function IntakeForm() {
 
         {step === 4 ? (
           <>
-            <Field id="whyNow" label="Why now?" usedIn="Timing filter" hint="Optional. What changed that makes this possible or needed.">
+            <Field id="whyNow" label="Why now?" hint="Optional. What changed that makes this possible or needed.">
               <Textarea id="whyNow" value={intake.whyNow} onChange={(e) => set({ whyNow: e.target.value })} aria-describedby="whyNow-hint" />
             </Field>
-            <Field id="regulatory" label="Regulatory or compliance concerns" usedIn="Timing → No regulatory gotchas" hint="Optional. Licensing, privacy, or platform rules.">
+            <Field id="regulatory" label="Regulatory or compliance concerns" hint="Optional. Licensing, privacy, or platform rules.">
               <Textarea id="regulatory" value={intake.regulatory} onChange={(e) => set({ regulatory: e.target.value })} aria-describedby="regulatory-hint" />
             </Field>
-            <Field id="distributionIdeas" label="Where can you reach them?" usedIn="Channel filter" hint="Optional. Communities, search terms, partners, or lists.">
+            <Field id="distributionIdeas" label="Where can you reach them?" hint="Optional. Communities, search terms, partners, or lists.">
               <Textarea id="distributionIdeas" value={intake.distributionIdeas} onChange={(e) => set({ distributionIdeas: e.target.value })} aria-describedby="distributionIdeas-hint" />
             </Field>
             <Review intake={intake} onJump={(i) => { setErrors({}); setStep(i); }} />
@@ -385,12 +385,11 @@ function described(id: string, errors: Record<string, string>) {
   return [errors[id] ? `${id}-err` : null, `${id}-hint`].filter(Boolean).join(" ") || undefined;
 }
 
-function Field({ id, label, hint, example, usedIn, error, children }: { id: string; label: string; hint?: string; example?: string; usedIn?: string; error?: string; children: React.ReactNode }) {
+function Field({ id, label, hint, example, error, children }: { id: string; label: string; hint?: string; example?: string; error?: string; children: React.ReactNode }) {
   return (
     <div>
       <div className="flex flex-wrap items-center gap-2">
         <Label htmlFor={id}>{label}</Label>
-        {usedIn ? <span className="rounded bg-surface px-1.5 py-0.5 text-[11px] font-medium text-ink-2">Used in: {usedIn}</span> : null}
       </div>
       <p id={`${id}-hint`} className="mt-1 text-xs leading-relaxed text-fg-tertiary">
         {hint}{hint && example ? " " : ""}{example ? <>Example: {example}</> : null}

@@ -8,7 +8,7 @@ export default function AppError({ error, reset }: { error: Error & { digest?: s
       <p className="mt-2 text-sm text-ink-2">{error.message || "The page couldn't be shown. Your ideas are still stored in this browser."}</p>
       <div className="mt-5 flex justify-center gap-2">
         <button type="button" onClick={reset} className="rounded bg-accent-strong px-3 py-2 text-sm font-medium text-accent-fg">Try again</button>
-        <Link href="/app" className="rounded border border-line px-3 py-2 text-sm font-medium">Dashboard</Link>
+        <Link href="/app/ideas" className="rounded border border-line px-3 py-2 text-sm font-medium">Your ideas</Link>
       </div>
     </main>
   );

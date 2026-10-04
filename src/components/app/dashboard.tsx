@@ -1,16 +1,14 @@
 "use client";
-import { Bar, BarChart, CartesianGrid, Legend, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ArrowUpDown, FolderOpen, LayoutGrid, Plus, Rows3, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { FILTERS, FILTER_SHORT, PILLAR_BY_ID } from "@/config/criteria";
-import { SCORING_CONFIG } from "@/config/scoring";
 import { PageSkeleton } from "@/components/app/app-shell";
 import { BandBadge, NetPill } from "@/components/report/markers";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { IconButton } from "@/components/ui/icon-button";
+import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/field";
 import { ConfirmDialog } from "@/components/ui/overlay";
 import { Segmented } from "@/components/ui/tabs";
@@ -41,7 +39,6 @@ export function Dashboard() {
   const [sort, setSort] = useState<SortKey>("score-desc");
   const [band, setBand] = useState<BandFilter>("all");
   const [cappedOnly, setCappedOnly] = useState(false);
-  const [rwwNo, setRwwNo] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [pendingDelete, setPendingDelete] = useState<Idea | null>(null);
   const [restoring, setRestoring] = useState(false);
@@ -57,7 +54,6 @@ export function Dashboard() {
       const r = reports.get(idea.id);
       if (band !== "all" && r?.score.band !== band) return false;
       if (cappedOnly && !(r && r.score.band !== r.score.uncappedBand)) return false;
-      if (rwwNo && !r?.pillars.some((p) => p.net === "no")) return false;
       return true;
     });
     const scoreOf = (idea: Idea) => reports.get(idea.id)?.score.overall ?? -1;
@@ -68,10 +64,10 @@ export function Dashboard() {
       return sort === "score-asc" ? -d : d;
     });
     return list;
-  }, [ideas, reports, band, cappedOnly, rwwNo, sort]);
+  }, [ideas, reports, band, cappedOnly, sort]);
 
   const compared = ideas.filter((i) => selected.includes(i.id) && reports.get(i.id));
-  const filtersOn = band !== "all" || cappedOnly || rwwNo;
+  const filtersOn = band !== "all" || cappedOnly;
 
   const toggle = (id: string) => {
     setSelected((cur) => {
@@ -157,12 +153,8 @@ export function Dashboard() {
               <input type="checkbox" checked={cappedOnly} onChange={(e) => setCappedOnly(e.target.checked)} />
               Capped
             </label>
-            <label className="flex items-center gap-1.5 rounded border border-line px-2 py-1 text-[13px]">
-              <input type="checkbox" checked={rwwNo} onChange={(e) => setRwwNo(e.target.checked)} />
-              Any RWW pillar = No
-            </label>
             {filtersOn ? (
-              <Button size="sm" variant="ghost" onClick={() => { setBand("all"); setCappedOnly(false); setRwwNo(false); }}>
+              <Button size="sm" variant="ghost" onClick={() => { setBand("all"); setCappedOnly(false); }}>
                 Clear filters
               </Button>
             ) : null}
@@ -172,7 +164,7 @@ export function Dashboard() {
             <div className="mt-8 rounded-lg border border-dashed border-line-strong p-8 text-center" role="status">
               <p className="text-sm font-medium">No ideas match these filters</p>
               <p className="mt-1 text-[13px] text-ink-2">Capped ideas are held back by a gate or thin evidence, not only by a low score.</p>
-              <Button size="sm" className="mt-3" onClick={() => { setBand("all"); setCappedOnly(false); setRwwNo(false); }}>
+              <Button size="sm" className="mt-3" onClick={() => { setBand("all"); setCappedOnly(false); }}>
                 Clear filters
               </Button>
             </div>
@@ -180,7 +172,7 @@ export function Dashboard() {
             <ul className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {filtered.map((idea) => (
                 <li key={idea.id}>
-                  <IdeaCard idea={idea} report={reports.get(idea.id) ?? null} selected={selected.includes(idea.id)} onToggle={() => toggle(idea.id)} onDelete={() => setPendingDelete(idea)} />
+                  <IdeaCard idea={idea} report={reports.get(idea.id) ?? null} selected={selected.includes(idea.id)} />
                 </li>
               ))}
             </ul>
@@ -194,7 +186,6 @@ export function Dashboard() {
                     <th className="px-3 py-2 font-medium" scope="col">Idea</th>
                     <th className="px-3 py-2 font-medium" scope="col">Score</th>
                     <th className="px-3 py-2 font-medium" scope="col">Band</th>
-                    <th className="px-3 py-2 font-medium" scope="col">Real / Win / Worth It</th>
                     <th className="px-3 py-2 font-medium" scope="col">Last run</th>
                     <th className="px-3 py-2 font-medium" scope="col">Status</th>
                     <th className="px-3 py-2 font-medium" scope="col"><span className="sr-only">Actions</span></th>
@@ -212,8 +203,7 @@ export function Dashboard() {
                           <Link href={hrefFor(idea)} className="hover:underline">{idea.intake.name || "Untitled draft"}</Link>
                         </td>
                         <td className="tnum px-3 py-2">{r ? r.score.overall : "—"}</td>
-                        <td className="px-3 py-2">{r ? <BandBadge band={r.score.band} capped={r.score.band !== r.score.uncappedBand} size="sm" /> : "—"}</td>
-                        <td className="px-3 py-2">{r ? <RwwRow report={r} /> : "—"}</td>
+                        <td className="px-3 py-2">{r ? <BandBadge band={r.score.band} score={r.score} size="sm" /> : "—"}</td>
                         <td className="px-3 py-2 text-ink-2">{idea.lastRunAt ? relTime(idea.lastRunAt) : "—"}</td>
                         <td className="px-3 py-2 capitalize text-ink-2">{idea.status}</td>
                         <td className="px-3 py-2">
@@ -279,34 +269,46 @@ function CompareBox({ idea, enabled, checked, onToggle }: { idea: Idea; enabled:
   );
 }
 
-function IdeaCard({ idea, report, selected, onToggle, onDelete }: { idea: Idea; report: Report | null; selected: boolean; onToggle: () => void; onDelete: () => void }) {
+function IdeaCard({ idea, report, selected }: { idea: Idea; report: Report | null; selected: boolean }) {
   const capped = !!report && report.score.band !== report.score.uncappedBand;
+  const name = idea.intake.name || "Untitled draft";
   return (
+    <Link href={hrefFor(idea)} className="group block h-full rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
     <Card
-      className={cn("h-full", selected && "border-brand")}
-      title={<Link href={hrefFor(idea)} className="text-fg no-underline">{idea.intake.name || "Untitled draft"}</Link>}
+      className={cn("h-full transition-colors group-hover:border-line-strong group-hover:bg-muted", selected && "border-brand")}
+      title={name}
       description={
         <span className="flex flex-col gap-2">
           <span className="line-clamp-2 text-fg-secondary">{idea.intake.oneLiner || "No description yet."}</span>
-          <span>{report ? <BandBadge band={report.score.band} capped={capped} size="sm" /> : <span>{idea.status === "draft" ? "Finish intake to score it" : "Analysis in progress"}</span>}</span>
-          {report ? <RwwRow report={report} /> : null}
+          <span>{report ? <BandBadge band={report.score.band} score={report.score} size="sm" /> : <span>{idea.status === "draft" ? "Finish intake to score it" : "Analysis in progress"}</span>}</span>
           <span>Last run {relTime(idea.lastRunAt)}</span>
         </span>
       }
       media={
-        <span className="relative flex items-center justify-center">
-          <span className="tnum text-page-title font-semibold text-fg">{report ? report.score.overall : "—"}</span>
-          <span className="absolute left-2 top-2">
-            <CompareBox idea={idea} enabled={!!report} checked={selected} onToggle={onToggle} />
+        report ? (
+          <span className="flex items-center gap-4 border-b border-line bg-canvas px-3">
+            <span className="flex shrink-0 flex-col">
+              <span className="tnum text-page-title font-semibold text-fg">{report.score.overall}</span>
+              <span className="text-caption font-medium text-fg-tertiary">Desy Score</span>
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col gap-1">
+              {report.filters.map((f) => (
+                <span key={f.id} className="flex items-center gap-2 text-caption text-fg-secondary">
+                  <span className="w-[60px] shrink-0 truncate">{FILTER_SHORT[f.id]}</span>
+                  <span className="h-1 flex-1 rounded-sm bg-subtle" aria-hidden>
+                    <span className="block h-full rounded-sm bg-brand" style={{ width: `${f.score ?? 0}%` }} />
+                  </span>
+                  <span className="tnum w-5 text-right">{f.score ?? "—"}</span>
+                </span>
+              ))}
+            </span>
           </span>
-          <span className="absolute right-1 top-1">
-            <IconButton label={`Delete ${idea.intake.name || "idea"}`} onClick={onDelete}>
-              <Trash2 />
-            </IconButton>
-          </span>
-        </span>
+        ) : (
+          <span className="flex items-center justify-center border-b border-line bg-canvas text-small text-fg-tertiary">Not scored yet</span>
+        )
       }
     />
+    </Link>
   );
 }
 
@@ -322,7 +324,7 @@ function ComparePanel({ ideas, reports }: { ideas: Idea[]; reports: Map<string, 
   return (
     <section aria-labelledby="compare-h" className="mt-8 rounded-lg border border-line p-4 md:p-5">
       <h2 id="compare-h" className="text-lg font-semibold">Compare</h2>
-      <p className="mt-1 text-[13px] text-ink-2">Five filter scores. The dashed line is the knockout threshold ({SCORING_CONFIG.knockoutBelow}). A missing bar means the filter has no scored criteria.</p>
+      <p className="mt-1 text-[13px] text-ink-2">Scores by area. A missing bar means there isn't enough evidence yet.</p>
       <div className="mt-4 h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
@@ -330,7 +332,6 @@ function ComparePanel({ ideas, reports }: { ideas: Idea[]; reports: Map<string, 
             <XAxis dataKey="filter" tick={{ fontSize: 12, fill: "rgb(var(--ink-2))" }} />
             <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: "rgb(var(--muted))" }} width={32} />
             <Tooltip contentStyle={{ background: "rgb(var(--canvas))", border: "1px solid rgb(var(--line))", borderRadius: 6, fontSize: 12, color: "rgb(var(--ink))" }} />
-            <ReferenceLine y={SCORING_CONFIG.knockoutBelow} stroke="rgb(var(--weak))" strokeDasharray="4 4" />
             {ideas.map((idea, i) => (
               <Bar key={idea.id} dataKey={idea.id} name={idea.intake.name} fill={BAR_COLORS[i] ?? "#171716"} radius={[2, 2, 0, 0]} />
             ))}
@@ -340,7 +341,7 @@ function ComparePanel({ ideas, reports }: { ideas: Idea[]; reports: Map<string, 
       </div>
       <div className="mt-4 overflow-x-auto">
         <table className="w-full min-w-[520px] text-left text-sm">
-          <caption className="sr-only">Filter scores for the selected ideas. Knockout threshold is {SCORING_CONFIG.knockoutBelow}.</caption>
+          <caption className="sr-only">Filter scores for the selected ideas.</caption>
           <thead>
             <tr className="border-b border-line text-xs text-ink-2">
               <th className="py-2 pr-3 font-medium" scope="col">Idea</th>
@@ -359,7 +360,7 @@ function ComparePanel({ ideas, reports }: { ideas: Idea[]; reports: Map<string, 
                 <tr key={idea.id} className="border-b border-line last:border-0">
                   <th className="py-2 pr-3 text-left font-medium" scope="row">{idea.intake.name}</th>
                   <td className="tnum py-2 pr-3">{r.score.overall}</td>
-                  <td className="py-2 pr-3"><BandBadge band={r.score.band} capped={r.score.band !== r.score.uncappedBand} size="sm" /></td>
+                  <td className="py-2 pr-3"><BandBadge band={r.score.band} score={r.score} size="sm" /></td>
                   {r.filters.map((f) => (
                     <td key={f.id} className="tnum py-2 pr-3">{f.score ?? "—"}</td>
                   ))}

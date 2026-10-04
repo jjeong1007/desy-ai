@@ -250,13 +250,13 @@ export interface ConsistencyInputs {
 export function applyConsistency(pillar: PillarId, net: RwwNet, x: ConsistencyInputs): { net: RwwNet; reason?: string } {
   if (net !== "yes") return { net };
   if (pillar === "real" && (x.customer == null || x.customer < C.consistency.realNeedsCustomerAtLeast)) {
-    return { net: "probably", reason: `Capped at Probably: Real can't be Yes while the Customer filter is ${x.customer == null ? "unscored" : x.customer} (below ${C.consistency.realNeedsCustomerAtLeast}).` };
+    return { net: "probably", reason: "Held at Probably: the customer evidence isn't strong enough yet." };
   }
   if (pillar === "win" && (x.competition == null || x.competition < C.consistency.winNeedsCompetitionAtLeast)) {
-    return { net: "probably", reason: `Capped at Probably: Win can't be Yes while the Competition filter is ${x.competition == null ? "unscored" : x.competition} (below ${C.consistency.winNeedsCompetitionAtLeast}).` };
+    return { net: "probably", reason: "Held at Probably: the competitive picture isn't strong enough yet." };
   }
   if (pillar === "worthIt" && x.obtainable != null && x.customersNeeded > x.obtainable) {
-    return { net: "probably", reason: `Capped at Probably: Path to MRR needs ${fmtInt(x.customersNeeded)} customers but only ~${fmtInt(x.obtainable)} are obtainable.` };
+    return { net: "probably", reason: `Held at Probably: your MRR goal needs ~${fmtInt(x.customersNeeded)} customers but only ~${fmtInt(x.obtainable)} look reachable.` };
   }
   return { net };
 }
@@ -314,7 +314,7 @@ const PILLAR_LABEL: Record<PillarId, string> = { real: "Real", win: "Win", worth
 
 function pillarNoReason(p: RwwPillar): string {
   const q = p.questions.find((x) => x.critical && x.answer === "no");
-  const t = q ? q.note.replace(/\.$/, "").split(". ")[0] : "a critical sub-question is No";
+  const t = q ? q.note.replace(/\.$/, "").split(". ")[0] : "a key question came back No";
   return t.charAt(0).toLowerCase() + t.slice(1);
 }
 
@@ -339,11 +339,10 @@ export function computeScoreResult(
   for (const p of noPillars) caps.push({ level: "weak", reason: `${PILLAR_LABEL[p.id]} = No: ${pillarNoReason(p)}.` });
   for (const id of knockoutFilters) {
     const f = filters.find((x) => x.id === id)!;
-    caps.push({ level: "promising", reason: `${FILTER_SHORT[id]} is a knockout filter (${f.score}, below ${C.knockoutBelow}).` });
+    caps.push({ level: "promising", reason: `${FILTER_SHORT[id]} scored too low (${f.score}).` });
   }
   for (const id of lowConfidenceFilters) {
-    const f = filters.find((x) => x.id === id)!;
-    caps.push({ level: "promising", reason: `Not enough evidence in ${FILTER_SHORT[id]} to call this strong (${f.unscoredCount} of 5 criteria need evidence).` });
+    caps.push({ level: "promising", reason: `Not enough evidence in ${FILTER_SHORT[id]} to call this strong.` });
   }
   const applied = caps.filter((c) => BAND_ORDER[c.level] < BAND_ORDER[uncappedBand]);
   for (const c of applied) band = minBand(band, c.level);
@@ -374,19 +373,17 @@ function bandReason(x: {
     const parts: string[] = [];
     const nos = x.pillars.filter((p) => p.net === "no");
     for (const p of nos) parts.push(`${PILLAR_LABEL[p.id]} = No (${pillarNoReason(p)})`);
-    for (const id of x.knockoutFilters) parts.push(`${FILTER_SHORT[id]} is a knockout filter (${x.filters.find((f) => f.id === id)!.score})`);
+    for (const id of x.knockoutFilters) parts.push(`${FILTER_SHORT[id]} scored too low (${x.filters.find((f) => f.id === id)!.score})`);
     if (nos.length === 0 && x.knockoutFilters.length === 0) {
       for (const id of x.lowConfidenceFilters) {
-        const f = x.filters.find((ff) => ff.id === id)!;
-        parts.push(`${FILTER_SHORT[id]} is low confidence (${f.unscoredCount} of 5 criteria need evidence)`);
+        parts.push(`${FILTER_SHORT[id]} needs more evidence`);
       }
     }
     return `${label} (capped): ${joinAnd(parts)}, despite a score of ${x.overall}; the score alone would have been misleading.`;
   }
   if (x.band === "strong") {
-    const floor = scored.length ? (scored[0].score as number) : 0;
-    const nets = x.pillars.every((p) => p.net === "yes") ? "every RWW pillar is Yes" : "every RWW pillar is Yes or Probably";
-    return `${label}: a score of ${x.overall} with no filter below ${floor} and ${nets}.`;
+    const nets = x.pillars.every((p) => p.net === "yes") ? "Real, Win and Worth It all look like Yes" : "Real, Win and Worth It all lean Yes";
+    return `${label}: a score of ${x.overall}, no weak spots, and ${nets}.`;
   }
   if (x.band === "promising") {
     const probably = x.pillars.filter((p) => p.net === "probably").map((p) => PILLAR_LABEL[p.id]);

@@ -4,7 +4,6 @@ import { FILTER_SHORT, PILLAR_BY_ID } from "@/config/criteria";
 import { BAND_LABEL, BAND_SHORT, SCORING_CONFIG as C } from "@/config/scoring";
 import { cn } from "@/lib/utils";
 import type { PillarId, Report } from "@/types";
-import { FrameworkTag } from "./framework-tag";
 import { BAND_STYLE, BandBadge, ConfidenceText, Knockout, LowConfidence, NetPill } from "./markers";
 
 /** 0-100 rail with the three band segments and the Desy diamond as the marker. */
@@ -37,7 +36,7 @@ export function ScoreRail({ score, band, uncappedBand, compact }: { score: numbe
           {segs.map((s) => (
             <span key={s.id} style={{ width: `${s.to - s.from}%` }} className={cn("flex items-center gap-1", s.id === band && "font-medium text-ink")}>
               {s.id === band && capped ? <Lock className="size-3" /> : null}
-              {BAND_SHORT[s.id]} {s.from}–{s.to === 100 ? 100 : s.to - 1}
+              {BAND_SHORT[s.id]}
             </span>
           ))}
         </div>
@@ -81,7 +80,6 @@ export function FilterChart({ report, onSelect, compact }: { report: Report; onS
               <span className={cn("shrink-0 text-left text-[13px] font-medium text-ink", compact ? "w-[84px]" : "w-[92px]")}>{FILTER_SHORT[f.id]}</span>
               <span className="relative h-2 flex-1 rounded-full bg-surface-2">
                 <span className={cn("absolute inset-y-0 left-0 rounded-full", f.score == null ? "hatch" : f.knockout ? "bg-weak" : f.lowConfidence ? "bg-lowconf/60" : "bg-ink/80")} style={{ width: `${f.score == null ? 100 : pct}%` }} />
-                <span className="absolute inset-y-[-3px] w-px bg-weak/60" style={{ left: `${C.knockoutBelow}%` }} aria-hidden />
               </span>
               <span className="tnum w-7 shrink-0 text-right text-[13px] font-semibold text-ink">{f.score ?? "—"}</span>
               {!compact ? (
@@ -111,10 +109,6 @@ export function FilterChart({ report, onSelect, compact }: { report: Report; onS
           );
         })}
       </ul>
-      <p className="mt-2 text-[11px] text-fg-tertiary">
-        <span className="mr-1 inline-block h-2.5 w-px translate-y-0.5 bg-weak/60" aria-hidden />
-        Knockout line at {C.knockoutBelow}
-      </p>
     </div>
   );
 }
@@ -131,7 +125,6 @@ export function ScoreHeader({ report, onPillar, onFilter, recalc, compact, headi
   const s = report.score;
   const capped = s.band !== s.uncappedBand;
   const lowConf = s.lowConfidenceFilters.length > 0;
-  const weightsEqual = Object.values(report.weights).every((w) => w === 0 || Math.abs(w - 20) < 0.01) && !Object.values(report.weights).includes(0);
   return (
     <section aria-labelledby={headingId} className={cn("rounded-lg border border-line bg-canvas", compact ? "p-4" : "p-5 md:p-6")}>
       <div className={cn("grid gap-6", !compact && "lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] lg:gap-10")}>
@@ -172,7 +165,7 @@ export function ScoreHeader({ report, onPillar, onFilter, recalc, compact, headi
                 <li key={r} className="flex items-start gap-2 text-[13px] text-ink-2">
                   <Lock className="mt-0.5 size-3.5 shrink-0 text-capped" aria-hidden />
                   <span>
-                    Score {s.overall} · {BAND_SHORT[s.band]} (capped): {r}
+                    {r}
                   </span>
                 </li>
               ))}
@@ -184,31 +177,18 @@ export function ScoreHeader({ report, onPillar, onFilter, recalc, compact, headi
                 <dt className="text-ink-2">Confidence</dt>
                 <dd>
                   <ConfidenceText c={s.confidence} />
-                  <span className="text-fg-tertiary"> ({report.coverage.withEvidence}/{report.coverage.total} criteria with evidence, {report.coverage.sources} sources)</span>
-                </dd>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                <dt className="text-ink-2">Weights</dt>
-                <dd className="tnum text-ink">
-                  {report.filters.map((f) => `${FILTER_SHORT[f.id]} ${Math.round(report.weights[f.id])}%`).join(", ")}
+                  <span className="text-fg-tertiary"> ({report.coverage.sources} sources)</span>
                 </dd>
               </div>
             </dl>
           ) : null}
-          {!compact ? <p className="mt-1.5 text-xs text-fg-tertiary">{weightsEqual ? "Equal weights by default; the course framework does not specify weights." : "Custom weights from Settings. The course framework does not specify weights."}</p> : null}
           <div className="mt-5">
-            <p className="mb-2 text-[13px] font-medium text-ink-2">Real / Win / Worth It gate</p>
+            <p className="mb-2 text-[13px] font-medium text-ink-2">Opportunity Assessment</p>
             <RwwStrip report={report} onSelect={onPillar} />
           </div>
-          {!compact ? (
-            <div className="mt-4 flex flex-wrap gap-1">
-              <FrameworkTag id="filters" />
-              <FrameworkTag id="rww" />
-            </div>
-          ) : null}
         </div>
         <div className={cn("min-w-0", !compact && "lg:border-l lg:border-line lg:pl-10")}>
-          <p className="mb-3 text-[13px] font-medium text-ink-2">Five filters</p>
+          <p className="mb-3 text-[13px] font-medium text-ink-2">Scoring</p>
           <FilterChart report={report} onSelect={onFilter} compact={compact} />
         </div>
       </div>

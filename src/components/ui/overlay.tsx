@@ -110,6 +110,19 @@ export function Tip({ children, content }: { children: React.ReactNode; content:
   );
 }
 
+export function RichTip({ children, content }: { children: React.ReactNode; content: React.ReactNode }) {
+  return (
+    <TooltipPrimitive.Root delayDuration={150}>
+      <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
+      <TooltipPrimitive.Portal>
+        <TooltipPrimitive.Content sideOffset={6} collisionPadding={12} className="z-50 w-72 rounded-lg border border-line bg-canvas p-3 text-left text-xs text-fg shadow-pop animate-fade-in">
+          {content}
+        </TooltipPrimitive.Content>
+      </TooltipPrimitive.Portal>
+    </TooltipPrimitive.Root>
+  );
+}
+
 // ---- Confirm dialog
 export function ConfirmDialog({ open, onOpenChange, title, description, confirmLabel, onConfirm, destructive = true, children }: { open: boolean; onOpenChange: (v: boolean) => void; title: string; description: string; confirmLabel: string; onConfirm: () => void; destructive?: boolean; children?: React.ReactNode }) {
   return (

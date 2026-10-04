@@ -2,7 +2,9 @@
 import { ArrowDownRight, ArrowUpRight, Check, CircleHelp, Gauge, HelpCircle, Lock, Minus, OctagonX, TrendingDown, TrendingUp, X } from "lucide-react";
 import { BAND_LABEL, BAND_SHORT } from "@/config/scoring";
 import { cn } from "@/lib/utils";
-import type { Confidence, PursuitBand, RwwAnswer, RwwNet, Sentiment } from "@/types";
+import { RichTip } from "@/components/ui/overlay";
+import { FILTER_SHORT } from "@/config/criteria";
+import type { Confidence, PursuitBand, RwwAnswer, RwwNet, ScoreResult, Sentiment } from "@/types";
 
 // Every semantic color is paired with an icon and a text label.
 
@@ -12,25 +14,77 @@ export const BAND_STYLE: Record<PursuitBand, { text: string; bg: string; bar: st
   weak: { text: "text-weak", bg: "bg-weak-tint", bar: "bg-weak", Icon: TrendingDown },
 };
 
-export function BandBadge({ band, capped, size = "md", full }: { band: PursuitBand; capped?: boolean; size?: "sm" | "md"; full?: boolean }) {
+export function BandBadge({ band, capped, score, size = "md", full }: { band: PursuitBand; capped?: boolean; score?: ScoreResult; size?: "sm" | "md"; full?: boolean }) {
   const s = BAND_STYLE[band];
+  const isCapped = capped ?? (score ? score.band !== score.uncappedBand : false);
   return (
     <span className="inline-flex items-center gap-1">
       <span className={cn("inline-flex items-center gap-1 rounded font-medium", s.bg, s.text, size === "sm" ? "px-1.5 py-0.5 text-xs [&_svg]:size-3" : "px-2 py-1 text-[13px] [&_svg]:size-3.5")}>
         <s.Icon aria-hidden />
         {full ? BAND_LABEL[band] : BAND_SHORT[band]}
       </span>
-      {capped ? <CappedMarker size={size} /> : null}
+      {isCapped ? <CappedMarker size={size} score={score} /> : null}
     </span>
   );
 }
 
-export function CappedMarker({ size = "md" }: { size?: "sm" | "md" }) {
-  return (
-    <span className={cn("inline-flex items-center gap-1 rounded border border-dashed border-capped/60 font-medium text-capped", size === "sm" ? "px-1.5 py-[1px] text-xs [&_svg]:size-3" : "px-2 py-[3px] text-[13px] [&_svg]:size-3.5")}>
+/** Pairs each applied cap with what it takes to lift it. Order matches score.capReasons. */
+function capGuidance(score: ScoreResult): { reason: string; fix: string }[] {
+  return score.capReasons.map((reason) => {
+    if (reason.includes("= No:")) return { reason, fix: "Resolve the failing question: add evidence that answers it, or change the idea so the answer becomes Yes or Maybe." };
+    if (reason.startsWith("Not enough evidence in ")) {
+      const id = score.lowConfidenceFilters.find((f) => reason.includes(FILTER_SHORT[f]));
+      return { reason, fix: `Add more sources for ${id ? FILTER_SHORT[id] : "that area"}, or re-run the agent that came back partial.` };
+    }
+    if (reason.includes("scored too low")) {
+      const id = score.knockoutFilters.find((f) => reason.startsWith(FILTER_SHORT[f]));
+      return { reason, fix: `Raise ${id ? FILTER_SHORT[id] : "that score"} by reworking the idea or finding evidence that changes it. Until then it can't rate as Strong.` };
+    }
+    return { reason, fix: "Address this gate to lift the cap." };
+  });
+}
+
+export function CappedMarker({ size = "md", score }: { size?: "sm" | "md"; score?: ScoreResult }) {
+  const marker = (
+    <span
+      tabIndex={score ? 0 : undefined}
+      className={cn("inline-flex items-center gap-1 rounded border border-dashed border-capped/60 font-medium text-capped focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus", score && "cursor-help", size === "sm" ? "px-1.5 py-[1px] text-xs [&_svg]:size-3" : "px-2 py-[3px] text-[13px] [&_svg]:size-3.5")}
+    >
       <Lock aria-hidden />
       Capped
     </span>
+  );
+  if (!score) return marker;
+  const items = capGuidance(score);
+  return (
+    <RichTip
+      content={
+        <div className="space-y-2.5">
+          <p className="font-medium">
+            Score alone: {BAND_LABEL[score.uncappedBand]}. Held to {BAND_LABEL[score.band]}.
+          </p>
+          {items.length ? (
+            <ul className="space-y-2.5">
+              {items.map((i) => (
+                <li key={i.reason} className="space-y-0.5">
+                  <p className="text-fg-secondary">
+                    <span className="font-medium text-fg">Why: </span>
+                    {i.reason}
+                  </p>
+                  <p className="text-fg-secondary">
+                    <span className="font-medium text-fg">To resolve: </span>
+                    {i.fix}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <p className="text-fg-tertiary">Caps change the band, never the score.</p>
+        </div>
+      }
+    >
+      {marker}
+    </RichTip>
   );
 }
 

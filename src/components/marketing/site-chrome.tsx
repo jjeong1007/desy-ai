@@ -11,7 +11,7 @@ import { IconButton } from "@/components/ui/icon-button";
 import { useDesy } from "@/store/desy";
 
 const product: NavMenuItem[] = [
-  { icon: <Gauge />, title: "Idea de-risking", description: "A score, five filters, and a pursuit band", href: "/#scoring" },
+  { icon: <Gauge />, title: "Idea de-risking", description: "A score, the evidence, and a pursuit band", href: "/#scoring" },
   { icon: <MessagesSquare />, title: "Data sources", description: "The findings behind every criterion", href: "/#sources" },
   { icon: <ClipboardList />, title: "Research planner", description: "A discovery script for the weakest evidence", href: "/#planner" },
 ];

@@ -4,13 +4,14 @@
  */
 import { SCORING_CONFIG } from "@/config/scoring";
 import { SEED_IDEAS } from "@/mock/seeds";
-import type { Idea, Session, Settings } from "@/types";
+import type { ChatThread, Idea, Session, Settings } from "@/types";
 
 const KEY = "desy:v1";
 
 export interface Db {
   version: 1;
   ideas: Idea[];
+  chats: ChatThread[];
   settings: Settings;
   session: Session | null;
 }
@@ -21,12 +22,13 @@ export const DEFAULT_SETTINGS: Settings = {
   profile: { name: "", email: "", role: "Solo founder" },
   reducedMotionRuns: false,
   partialFailure: "random",
+  integrations: [],
 };
 
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
 
 export function seedDb(): Db {
-  return { version: 1, ideas: clone(SEED_IDEAS), settings: clone(DEFAULT_SETTINGS), session: null };
+  return { version: 1, ideas: clone(SEED_IDEAS), chats: [], settings: clone(DEFAULT_SETTINGS), session: null };
 }
 
 let cache: Db | null = null;
@@ -43,6 +45,7 @@ export function readDb(): Db {
     }
     const parsed = JSON.parse(raw) as Db;
     if (!parsed || parsed.version !== 1 || !Array.isArray(parsed.ideas)) throw new Error("bad shape");
+    if (!Array.isArray(parsed.chats)) parsed.chats = [];
     parsed.settings = { ...DEFAULT_SETTINGS, ...parsed.settings, weights: { ...DEFAULT_SETTINGS.weights, ...parsed.settings?.weights } };
     cache = parsed;
     return cache;
@@ -74,6 +77,18 @@ export function resetDb(): Db {
   const prev = readDb();
   db.session = prev.session;
   db.settings = prev.settings;
+  db.chats = prev.chats;
   writeDb(db);
   return db;
+}
+
+/** Removes everything this demo stored in the browser. The next read starts from fresh seed data. */
+export function clearDb(): void {
+  cache = null;
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(KEY);
+  } catch {
+    /* nothing stored */
+  }
 }

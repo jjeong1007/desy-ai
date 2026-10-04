@@ -1,6 +1,6 @@
 /** Mock session and settings. Any credentials succeed. */
 import { delay } from "@/lib/utils";
-import { DEFAULT_SETTINGS, mutateDb, readDb } from "./storage";
+import { clearDb, DEFAULT_SETTINGS, mutateDb, readDb } from "./storage";
 import type { Session, Settings } from "@/types";
 
 export async function signIn(email: string, name?: string): Promise<Session> {
@@ -37,4 +37,20 @@ export async function saveSettings(patch: Partial<Settings>): Promise<Settings> 
     out = db.settings;
   });
   return out;
+}
+
+/** Everything stored for this account, as pretty-printed JSON. */
+export function exportData(): string {
+  const { ideas, chats, settings, session } = readDb();
+  return JSON.stringify({ exportedAt: new Date().toISOString(), session, settings, ideas, chats }, null, 2);
+}
+
+/** Size of the stored workspace in bytes. */
+export function storedBytes(): number {
+  return new Blob([JSON.stringify(readDb())]).size;
+}
+
+export async function deleteAllData(): Promise<void> {
+  await delay(300);
+  clearDb();
 }

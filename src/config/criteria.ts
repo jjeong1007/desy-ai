@@ -68,9 +68,9 @@ export function soloReadingFor(def: CriterionDef, buildPath: BuildPath | null): 
 }
 
 export const PILLARS: PillarDef[] = [
-  { id: "real", label: "Real", question: "Is there a real market and a real product?", fit: "Product/market fit", drawsOn: ["customer", "timing"] },
-  { id: "win", label: "Win", question: "Can this founder's product be competitive?", fit: "Product/company fit (the company is you)", drawsOn: ["competition", "channel"] },
-  { id: "worthIt", label: "Worth It", question: "Is the return adequate and the risk acceptable?", fit: "Product/business fit", drawsOn: ["economic"] },
+  { id: "real", label: "Real", question: "Is there a real market and a real product?", definition: "Customers have a genuine need, can and will pay to solve it, and a product that meets that need can actually be built.", fit: "Product/market fit", drawsOn: ["customer", "timing"] },
+  { id: "win", label: "Win", question: "Can this founder's product be competitive?", definition: "Your product can beat today's alternatives, and you have the skills, time and channels to win customers and keep them.", fit: "Product/company fit (the company is you)", drawsOn: ["competition", "channel"] },
+  { id: "worthIt", label: "Worth It", question: "Is the return adequate and the risk acceptable?", definition: "The revenue you can realistically reach justifies the time, money and risk it takes, within your timeline and budget.", fit: "Product/business fit", drawsOn: ["economic"] },
 ];
 export const PILLAR_BY_ID: Record<PillarId, PillarDef> = Object.fromEntries(PILLARS.map((p) => [p.id, p])) as Record<PillarId, PillarDef>;
 
