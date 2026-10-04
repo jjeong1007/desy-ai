@@ -270,7 +270,6 @@ function CompareBox({ idea, enabled, checked, onToggle }: { idea: Idea; enabled:
 }
 
 function IdeaCard({ idea, report, selected }: { idea: Idea; report: Report | null; selected: boolean }) {
-  const capped = !!report && report.score.band !== report.score.uncappedBand;
   const name = idea.intake.name || "Untitled draft";
   return (
     <Link href={hrefFor(idea)} className="group block h-full rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
@@ -324,7 +323,7 @@ function ComparePanel({ ideas, reports }: { ideas: Idea[]; reports: Map<string, 
   return (
     <section aria-labelledby="compare-h" className="mt-8 rounded-lg border border-line p-4 md:p-5">
       <h2 id="compare-h" className="text-lg font-semibold">Compare</h2>
-      <p className="mt-1 text-[13px] text-ink-2">Scores by area. A missing bar means there isn't enough evidence yet.</p>
+      <p className="mt-1 text-[13px] text-ink-2">Scores by area. A missing bar means there isn&apos;t enough evidence yet.</p>
       <div className="mt-4 h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
