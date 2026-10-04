@@ -368,7 +368,7 @@ export function LandingPage() {
 
       <section id="faq" className="scroll-mt-24 py-12 md:py-24">
         <Container className="grid gap-12 lg:grid-cols-[1fr_2fr]">
-          <SectionHeader align="left" title="Questions, answered" lead="The score, the sources, and what stays on this device." />
+          <SectionHeader align="left" title="Questions, answered" lead="The score, the sources, and what happens to your data." />
           <Reveal delay={120}>
             <Accordion items={FAQ} />
           </Reveal>

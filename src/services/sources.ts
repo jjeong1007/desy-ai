@@ -1,9 +1,8 @@
-/** Data Sources service: query findings, pin/note/hide, preview the effect of hiding. */
+/** Data Sources service: query findings and preview the effect of hiding (pure, shared); pin/note/hide go to the server. */
 import { CRITERION_BY_ID, FILTER_SHORT, PILLAR_BY_ID, RWW_BY_ID } from "@/config/criteria";
 import { getSource } from "@/config/sources";
-import { delay } from "@/lib/utils";
 import { computeReport, diffReports, type ReportDiff } from "./scoring";
-import { updateIdea } from "./ideas";
+import { setFindingState as setFindingStateAction } from "@/server/actions/ideas";
 import type { AgentId, FilterId, Finding, PillarId, FindingState, FindingType, Idea, Report, Settings } from "@/types";
 
 export interface FindingQuery {
@@ -81,14 +80,7 @@ export function previewHide(idea: Idea, findingId: string, settings: Pick<Settin
   return { before, after, diff: diffReports(before, after) };
 }
 
-export async function setFindingState(ideaId: string, findingId: string, patch: Partial<FindingState>, summary?: { text: string; kind: "hidden" | "unhidden"; scoreBefore: number; scoreAfter: number; bandBefore: Report["score"]["band"]; bandAfter: Report["score"]["band"] }): Promise<Idea> {
-  await delay(120);
-  return updateIdea(
-    ideaId,
-    (idea) => {
-      const prev: FindingState = idea.findingState[findingId] ?? { pinned: false, hidden: false, note: "" };
-      idea.findingState[findingId] = { ...prev, ...patch };
-    },
-    summary ? { kind: summary.kind, summary: summary.text, scoreBefore: summary.scoreBefore, scoreAfter: summary.scoreAfter, bandBefore: summary.bandBefore, bandAfter: summary.bandAfter } : undefined,
-  );
+/** Pin, note, or hide a finding. Score fields in `summary` are ignored: the server recomputes them. */
+export async function setFindingState(ideaId: string, findingId: string, patch: Partial<FindingState>, summary?: { text: string; kind: "hidden" | "unhidden"; scoreBefore?: number; scoreAfter?: number; bandBefore?: Report["score"]["band"]; bandAfter?: Report["score"]["band"] }): Promise<Idea> {
+  return setFindingStateAction(ideaId, findingId, patch, summary ? { text: summary.text, kind: summary.kind } : undefined);
 }

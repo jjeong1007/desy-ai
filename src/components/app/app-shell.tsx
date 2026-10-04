@@ -92,7 +92,7 @@ function UserMenu() {
   const session = useDesy((s) => s.session);
   const settings = useDesy((s) => s.settings);
   const setSettings = useDesy((s) => s.setSettings);
-  const setSession = useDesy((s) => s.setSession);
+  const reset = useDesy((s) => s.reset);
   const router = useRouter();
   const setTheme = async (theme: "light" | "dark" | "system") => setSettings(await saveSettings({ theme }));
   return (
@@ -129,7 +129,7 @@ function UserMenu() {
         <DropdownMenuItem
           onSelect={async () => {
             await signOut();
-            setSession(null);
+            reset();
             toast.success("Signed out");
             router.push("/");
           }}
@@ -144,6 +144,8 @@ function UserMenu() {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const hydrated = useDesy((s) => s.hydrated);
   const session = useDesy((s) => s.session);
+  const loadError = useDesy((s) => s.loadError);
+  const hydrate = useDesy((s) => s.hydrate);
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams<{ id?: string }>();
@@ -166,8 +168,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     });
 
   useEffect(() => {
-    if (hydrated && !session) router.replace(`/sign-in?next=${encodeURIComponent(pathname)}`);
-  }, [hydrated, session, router, pathname]);
+    if (hydrated && !session && !loadError) router.replace(`/sign-in?next=${encodeURIComponent(pathname)}`);
+  }, [hydrated, session, loadError, router, pathname]);
+
+  if (loadError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 px-6 text-center" role="alert">
+        <p className="m-0 text-body text-fg">{loadError}</p>
+        <Button onClick={() => void hydrate()}>Try again</Button>
+      </div>
+    );
+  }
 
   if (!hydrated || !session) {
     return (

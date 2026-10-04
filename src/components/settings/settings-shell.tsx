@@ -1,5 +1,5 @@
 "use client";
-import { ChevronLeft, CreditCard, LifeBuoy, Plug, ShieldCheck, UserRound } from "lucide-react";
+import { ChevronLeft, CreditCard, LifeBuoy, Plug, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -11,7 +11,6 @@ export const SETTINGS_NAV = [
   { href: "/app/settings/billing", label: "Plans & billing", icon: <CreditCard /> },
   { href: "/app/settings/integrations", label: "Integrations", icon: <Plug /> },
   { href: "/app/settings/support", label: "Support", icon: <LifeBuoy /> },
-  { href: "/app/settings/privacy", label: "Data privacy", icon: <ShieldCheck /> },
 ];
 
 /** Layout for /app/settings: a settings nav in place of the app sidebar, with tabs on small screens. */

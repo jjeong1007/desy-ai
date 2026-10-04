@@ -1,8 +1,6 @@
-import type { Metadata } from "next";
-import { PrivacySettings } from "@/components/settings/privacy";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = { title: "Data privacy" };
-
+/** Data privacy now lives on the Account page. Old links and bookmarks land there. */
 export default function Page() {
-  return <PrivacySettings />;
+  redirect("/app/settings/account#data");
 }

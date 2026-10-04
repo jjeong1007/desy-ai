@@ -10,8 +10,14 @@ function isDark(theme: Settings["theme"]) {
   return theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 }
 
+/** Applies the theme and remembers it on this device, so the next page load paints it before hydration. */
 export function applyTheme(theme: Settings["theme"]) {
   document.documentElement.classList.toggle("dark", isDark(theme));
+  try {
+    localStorage.setItem("desy:theme", theme);
+  } catch {
+    /* storage unavailable: the saved setting still applies after load */
+  }
 }
 
 /** Switches the whole site between light and dark. The choice is stored with the other settings. */

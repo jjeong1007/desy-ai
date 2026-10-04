@@ -26,6 +26,6 @@ export const FAQ: { question: string; answer: string }[] = [
   },
   {
     question: "What happens to my data?",
-    answer: "In this demo there is no account server. Ideas, notes, and settings stay in your browser. Signing out keeps them on this device. Clearing site data removes them. A future backend can replace the service layer without changing the screens.",
+    answer: "Your ideas, notes, and settings are saved to your Desy account, and only you can see them. You can export everything as a file or delete your account at any time from Settings → Account.",
   },
 ];

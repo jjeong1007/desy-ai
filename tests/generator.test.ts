@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { SCORING_CONFIG } from "@/config/scoring";
 import { generateAnalysis } from "@/mock/generator";
 import { computeReport } from "@/services/scoring";
-import { generatePlan, runSynthesis, sampleNotes, previewSynthesis } from "@/services/planner";
-import { EMPTY_INTAKE } from "@/services/ideas";
+import { generatePlan, runSynthesis, sampleNotes, previewSynthesis } from "@/engine/planner";
+import { EMPTY_INTAKE } from "@/config/intake";
 import type { Idea, IntakeInput } from "@/types";
 
 const intake: IntakeInput = {

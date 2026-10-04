@@ -9,7 +9,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const hydrate = useDesy((s) => s.hydrate);
   const theme = useDesy((s) => s.settings?.theme);
   useEffect(() => {
-    hydrate();
+    void hydrate();
   }, [hydrate]);
   useEffect(() => {
     if (!theme) return;
@@ -29,4 +29,4 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 
 /** Inline script that sets the theme class before first paint. */
-export const THEME_SCRIPT = `(function(){try{var s=JSON.parse(localStorage.getItem('desy:v1')||'{}');var t=(s.settings&&s.settings.theme)||'system';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
+export const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('desy:theme')||'system';var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;

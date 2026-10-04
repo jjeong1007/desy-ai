@@ -1,15 +1,23 @@
 # Desy
 
-Desy scores a small SaaS idea before you build it. This repository is a frontend-only demo: marketing site, mock sign-in, and the logged-in product. Research agents, scoring, and interview synthesis all run in the browser against mock data. A real backend can replace the service layer without rewriting the screens.
+Desy scores a small SaaS idea before you build it. This repository holds the marketing site and the logged-in product, backed by Supabase (auth and Postgres). Research agents, chat replies, and interview synthesis still use deterministic templates on the server; the plan for real LLM agents is in [docs/BACKEND_PLAN.md](docs/BACKEND_PLAN.md).
 
 ## Setup
 
-```bash
-npm install
-npm run dev
-```
+1. Create a Supabase project. Copy `.env.example` to `.env.local` and fill in the URL, anon key, and service role key from Project Settings → API.
+2. Apply the schema with the [Supabase CLI](https://supabase.com/docs/guides/cli):
+   ```bash
+   supabase link --project-ref <your-project-ref>
+   supabase db push
+   ```
+3. In Supabase → Authentication → URL Configuration, set the Site URL (e.g. `http://localhost:3000`) and add `<site>/auth/callback` to the redirect URLs. To offer Google sign-in, enable the Google provider there too.
+4. Run the app:
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). On Vercel, set the same three env vars for each environment and add the deployment's `/auth/callback` URL to Supabase's redirect list.
 
 | Script | What it does |
 | --- | --- |
@@ -17,9 +25,10 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run build` | Production build |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint, zero warnings |
-| `npm test` | Vitest unit tests for scoring and report generation |
+| `npm test` | Vitest unit tests for scoring, report generation, and server actions (in-memory Supabase fake) |
+| `node --env-file=.env.local scripts/check-rls.mjs` | Checks row-level security against your real project with two throwaway users |
 
-Any email and password signs you in. Ideas, notes, and settings persist in `localStorage` under `desy:v1`. If storage is empty or unreadable, the app falls back to three seeded ideas.
+Sign up with email and password (or Google). Each new account gets the three sample ideas once. Ideas, chats, notes, and settings live in Postgres; every table has row-level security so users only see their own rows.
 
 ## Route map
 
@@ -27,28 +36,40 @@ Any email and password signs you in. Ideas, notes, and settings persist in `loca
 
 - `/` landing page
 - `/pricing` placeholder tiers (no checkout)
-- `/sign-in` and `/sign-up` mock auth; any input succeeds and continues to `next` or `/app`
+- `/sign-in` and `/sign-up` Supabase auth; continues to `next` or `/app`
+- `/auth/callback` finishes OAuth and email-confirmation sign-ins
 
-**Product** (requires a mock session)
+**Product** (requires a session; `src/middleware.ts` redirects signed-out visitors)
 
 - `/app` dashboard: sort, filter, compare 2–3 ideas
 - `/app/ideas/new` multi-step intake (`?draft=` resumes a draft, `?edit=` edits an existing idea)
 - `/app/ideas/[id]` workspace with Overview, Data Sources, and Research Planner
 - `/app/ideas/[id]/run` simulated agent run, with Skip to results
 - `/app/ideas/[id]/print?doc=report` or `?doc=plan` print view
-- `/app/settings` profile, theme, scoring weights, demo run options
+- `/app/settings/account` profile, theme, your data (export, restore samples), sign out, delete account
+- `/app/settings/billing`, `/integrations` (MCP access tokens), `/support`. `/app/settings/privacy` redirects to Account
+
+**API**
+
+- `GET /api/bootstrap` session, settings, ideas, and chats for the client store
+- `GET /api/account/export` JSON download of everything in the account
+- `POST /api/account/delete` deletes the account (all tables cascade)
+- `/api/mcp` read-only MCP server for AI tools, authenticated with a personal access token (`Authorization: Bearer desy_…`). Tools: `list_ideas`, `get_idea_report`, `search_findings`, `get_research_plan`
 
 ## Folder structure
 
 ```
-src/app            routes
+src/app            routes, API route handlers
 src/components     UI: marketing, app shell, report, sources, planner
-src/services       async data access (swap these for an API)
+src/services       client-facing data access: thin wrappers over server actions, plus pure helpers (scoring, finding queries)
+src/server         server only: Supabase clients, row mapping (db.ts), server actions, input schemas
+src/engine         templated "AI" logic (analysis, chat replies, planner); the seam where LLMs plug in later
 src/config         scoring thresholds, the 25 criteria, agents, source registry
 src/mock           knowledge base, seeds, report generator
 src/store          Zustand cache over the services
 src/types          shared TypeScript types
-tests              scoring and generator tests
+supabase           CLI config and SQL migrations
+tests              scoring, generator, and server-action tests
 ```
 
 ## Where the mock content lives
@@ -58,7 +79,7 @@ tests              scoring and generator tests
 - **Seeds:** `src/mock/seeds/`. Invoice reminders (strong), tutor scheduling (promising, no-code founder), generic AI notes (score in the Promising range, band capped at Weak).
 - **New ideas:** `src/mock/generator.ts` builds a report from the intake. Scores and bands always come from `src/services/scoring.ts`, never from the generator writing them directly.
 
-Re-running a seeded example keeps its curated findings unless Settings → Partial agent failure is set to Always. Newly created ideas always go through the generator. Computed criteria (sizable customer base, margins, CAC payback, and "Will it make money?") still follow the current price, goal, and running cost.
+Re-running a seeded example keeps its curated findings. Newly created ideas always go through the generator. Computed criteria (sizable customer base, margins, CAC payback, and "Will it make money?") still follow the current price, goal, and running cost.
 
 ## Scoring model
 
@@ -75,7 +96,7 @@ Filter score = (sum of scored criteria ÷ (4 × number scored)) × 100. Null if 
 
 A filter is **low confidence** when 3 or more of its 5 criteria are unscored. A null filter is also low confidence. It still counts at its weight when it has a score. A null filter is excluded and the remaining weights are renormalized.
 
-**Desy Score** = weighted mean of the non-null filter scores, rounded. Default weights are 20% each and must sum to 100%. Change them in Settings. The report shows the weights in use.
+**Desy Score** = weighted mean of the non-null filter scores, rounded. Default weights are 20% each and must sum to 100%. The report shows the weights in use.
 
 ### Pursuit bands and caps
 
@@ -125,22 +146,23 @@ These all go through `computeReport` in `services/scoring.ts`:
 
 - Path to MRR price and goal
 - Hiding or restoring a finding (with a before/after preview)
-- Scoring weights in Settings
 - Applying interview synthesis
 
-## Replacing a service with a real API
+## How data flows
 
-Components call async functions and then write the returned entities into the Zustand store. They do not read `localStorage` themselves.
+Components call async functions in `src/services/*`, then write the returned entities into the Zustand store. The services re-export server actions from `src/server/actions/*`, which check the user, validate input with Zod, and read or write Supabase as that user (RLS applies). Ideas keep their nested parts (analysis, plan, history) as `jsonb` in the same shapes as `src/types`; `mutateIdea` in `src/server/db.ts` does a versioned read-modify-write so concurrent saves don't overwrite each other.
 
-| Module | Replace with |
+| Module | What it does |
 | --- | --- |
-| `services/ideas.ts` | CRUD for ideas and drafts |
-| `services/analysis.ts` | Start a run and stream agent events. Today it computes the analysis immediately and the run view replays `RunPlan`. |
-| `services/scoring.ts` | Keep the pure functions if the server returns the same inputs; or have the server return a `Report` in the same shape. Do not reimplement thresholds in components. |
-| `services/sources.ts` | Findings query, pin/note/hide, hide preview |
-| `services/planner.ts` | Plan generation and synthesis |
-| `services/account.ts` | Real auth and settings |
-| `services/storage.ts` | Delete once the services talk to the API |
+| `services/ideas.ts` | CRUD for ideas and drafts, weights history, restore samples |
+| `services/analysis.ts` | Start a run (the server computes the analysis and a replayable `RunPlan`) and complete it |
+| `services/scoring.ts` | Pure scoring, shared by client and server. History scores are recomputed on the server |
+| `services/sources.ts` | Findings query and hide preview (pure); pin/note/hide on the server |
+| `services/planner.ts` | Plan generation, notes, synthesis |
+| `services/chat.ts` | Threads and replies |
+| `services/account.ts` | Supabase auth in the browser, settings, export, deletion |
+
+To swap in real AI, replace the functions in `src/engine/*` and keep their inputs and outputs. See the "Deferred: LLM work" section in [docs/BACKEND_PLAN.md](docs/BACKEND_PLAN.md).
 
 Types live in `src/types/index.ts`. Keep response shapes the same and the UI can stay.
 
@@ -168,5 +190,5 @@ Other product assumptions, also listed so they can be revisited:
 - "White label opportunities" is read as partnerships, integrations, app marketplaces, or resellers.
 - "Not sure yet" on build path leaves Low development costs as Needs evidence.
 - Hiding a finding removes it from the next score. Interview synthesis writes adjustments the scoring functions apply on top of the agent judgments.
-- This demo does not call the network for research, auth, or payments. Agent timing is a replay of about 20–40 seconds, with Skip to results.
+- Research agents don't call the network yet: the server generates findings from templates and the run view replays them over about 20–40 seconds, with Skip to results. There are no payments.
 - Placeholder prices on the marketing site are not a billing integration. The demo does not enforce the Free tier's one-idea limit.

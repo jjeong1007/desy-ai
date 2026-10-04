@@ -1,56 +1,59 @@
-/** Mock session and settings. Any credentials succeed. */
-import { delay } from "@/lib/utils";
-import { clearDb, DEFAULT_SETTINGS, mutateDb, readDb } from "./storage";
-import type { Session, Settings } from "@/types";
+/**
+ * Account service: Supabase auth in the browser; settings, export and deletion on the server.
+ * After any sign-in, call the store's hydrate() to load the workspace.
+ */
+import { supabaseBrowser } from "@/lib/supabase/browser";
 
-export async function signIn(email: string, name?: string): Promise<Session> {
-  await delay(500);
-  const session: Session = { email, name: name || email.split("@")[0] || "Founder", signedInAt: new Date().toISOString() };
-  mutateDb((db) => {
-    db.session = session;
-    if (!db.settings.profile.email) db.settings.profile = { ...db.settings.profile, email, name: session.name };
+export { getSettings, saveSettings } from "@/server/actions/account";
+
+export type SignUpResult = { status: "signedIn" } | { status: "confirmEmail" };
+
+const callbackUrl = (next: string) => `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
+
+/** Friendlier wording for the auth errors people actually hit. */
+function authMessage(message: string): string {
+  if (/invalid login credentials/i.test(message)) return "That email and password don't match an account.";
+  if (/email not confirmed/i.test(message)) return "Confirm your email first. Check your inbox for the link.";
+  if (/already registered|already exists/i.test(message)) return "There's already an account with that email. Sign in instead.";
+  if (/password/i.test(message)) return message;
+  return "Something went wrong. Try again.";
+}
+
+export async function signIn(email: string, password: string): Promise<void> {
+  const { error } = await supabaseBrowser().auth.signInWithPassword({ email, password });
+  if (error) throw new Error(authMessage(error.message));
+}
+
+export async function signUp(name: string, email: string, password: string, next: string): Promise<SignUpResult> {
+  const { data, error } = await supabaseBrowser().auth.signUp({
+    email,
+    password,
+    options: { data: { name }, emailRedirectTo: callbackUrl(next) },
   });
-  return session;
+  if (error) throw new Error(authMessage(error.message));
+  return data.session ? { status: "signedIn" } : { status: "confirmEmail" };
+}
+
+/** Redirects to Google; the browser comes back through /auth/callback. */
+export async function signInWithGoogle(next: string): Promise<void> {
+  const { error } = await supabaseBrowser().auth.signInWithOAuth({ provider: "google", options: { redirectTo: callbackUrl(next) } });
+  if (error) throw new Error(authMessage(error.message));
 }
 
 export async function signOut(): Promise<void> {
-  await delay(150);
-  mutateDb((db) => {
-    db.session = null;
-  });
-}
-
-export function getSessionSync(): Session | null {
-  return readDb().session;
-}
-
-export async function getSettings(): Promise<Settings> {
-  await delay(80);
-  return readDb().settings;
-}
-
-export async function saveSettings(patch: Partial<Settings>): Promise<Settings> {
-  await delay(200);
-  let out: Settings = DEFAULT_SETTINGS;
-  mutateDb((db) => {
-    db.settings = { ...db.settings, ...patch };
-    out = db.settings;
-  });
-  return out;
+  await supabaseBrowser().auth.signOut();
 }
 
 /** Everything stored for this account, as pretty-printed JSON. */
-export function exportData(): string {
-  const { ideas, chats, settings, session } = readDb();
-  return JSON.stringify({ exportedAt: new Date().toISOString(), session, settings, ideas, chats }, null, 2);
+export async function exportData(): Promise<Blob> {
+  const res = await fetch("/api/account/export");
+  if (!res.ok) throw new Error("Export failed");
+  return res.blob();
 }
 
-/** Size of the stored workspace in bytes. */
-export function storedBytes(): number {
-  return new Blob([JSON.stringify(readDb())]).size;
-}
-
+/** Deletes the account and all of its data, then signs out. */
 export async function deleteAllData(): Promise<void> {
-  await delay(300);
-  clearDb();
+  const res = await fetch("/api/account/delete", { method: "POST" });
+  if (!res.ok) throw new Error("Delete failed");
+  await supabaseBrowser().auth.signOut();
 }

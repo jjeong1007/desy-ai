@@ -417,11 +417,6 @@ export interface Settings {
   weights: Record<FilterId, number>;
   theme: "light" | "dark" | "system";
   profile: { name: string; email: string; role: string };
-  reducedMotionRuns: boolean;
-  /** Demo control for the agent run: random (~30%), always, or never return a partial agent failure. */
-  partialFailure: "random" | "always" | "never";
-  /** AI tools connected over MCP (simulated in the demo), by id from config/integrations. */
-  integrations: string[];
 }
 
 export interface Session {

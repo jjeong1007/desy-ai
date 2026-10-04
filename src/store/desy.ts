@@ -1,19 +1,29 @@
 "use client";
 /**
- * Client cache over the service layer. Components call services, then upsert the returned
- * entities here. Swapping services for an API requires no component changes.
+ * Client cache over the service layer. hydrate() loads the workspace from /api/bootstrap; components
+ * call services (server actions), then upsert the returned entities here.
  */
 import { create } from "zustand";
-import { readDb } from "@/services/storage";
 import type { ChatThread, Idea, Session, Settings } from "@/types";
+
+interface Bootstrap {
+  session: Session | null;
+  settings: Settings | null;
+  ideas: Idea[];
+  chats: ChatThread[];
+}
 
 interface DesyState {
   hydrated: boolean;
+  /** Set when the workspace couldn't load (server down, Supabase not configured). */
+  loadError: string | null;
   ideas: Idea[];
   chats: ChatThread[];
   settings: Settings | null;
   session: Session | null;
-  hydrate: () => void;
+  hydrate: () => Promise<void>;
+  /** Clears everything, e.g. after sign-out or account deletion. */
+  reset: () => void;
   upsertIdea: (idea: Idea) => void;
   removeIdea: (id: string) => void;
   setIdeas: (ideas: Idea[]) => void;
@@ -23,16 +33,31 @@ interface DesyState {
   setSession: (s: Session | null) => void;
 }
 
+let inflight: Promise<void> | null = null;
+
 export const useDesy = create<DesyState>((set) => ({
   hydrated: false,
+  loadError: null,
   ideas: [],
   chats: [],
   settings: null,
   session: null,
   hydrate: () => {
-    const db = readDb();
-    set({ hydrated: true, ideas: db.ideas, chats: db.chats, settings: db.settings, session: db.session });
+    inflight ??= (async () => {
+      try {
+        const res = await fetch("/api/bootstrap", { cache: "no-store" });
+        if (!res.ok) throw new Error(res.status === 503 ? "Desy's database isn't configured yet." : "Couldn't load your workspace.");
+        const data = (await res.json()) as Bootstrap;
+        set({ hydrated: true, loadError: null, session: data.session, settings: data.settings, ideas: data.ideas, chats: data.chats });
+      } catch (e) {
+        set({ hydrated: true, loadError: e instanceof Error ? e.message : "Couldn't load your workspace.", session: null, settings: null, ideas: [], chats: [] });
+      } finally {
+        inflight = null;
+      }
+    })();
+    return inflight;
   },
+  reset: () => set({ session: null, settings: null, ideas: [], chats: [] }),
   upsertIdea: (idea) =>
     set((s) => {
       const exists = s.ideas.some((i) => i.id === idea.id);

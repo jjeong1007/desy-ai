@@ -22,7 +22,7 @@ export const PLANS = [
     price: 29,
     period: "/month",
     blurb: "For founders comparing several ideas and running discovery.",
-    features: ["Unlimited ideas", "Re-runs when you change the inputs", "Research planner and interview synthesis", "Adjustable scoring weights"],
+    features: ["Unlimited ideas", "Re-runs when you change the inputs", "Research planner and interview synthesis"],
     cta: "Choose Pro",
     href: "/sign-up",
     popular: true,

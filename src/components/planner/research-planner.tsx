@@ -49,7 +49,7 @@ export function ResearchPlanner({ idea, report }: { idea: Idea; report: Report }
   const generate = async (g: PlanGoal) => {
     setBusy(true);
     try {
-      upsert(await createPlan(idea, report, g));
+      upsert(await createPlan(idea, g));
       toast.success(g === "discovery" ? "Discovery plan ready" : "Pitch plan ready");
     } catch {
       toast.error("Couldn't generate the plan. Try again.");

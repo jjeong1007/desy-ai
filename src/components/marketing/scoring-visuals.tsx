@@ -14,7 +14,7 @@ import { getSource } from "@/config/sources";
 import { topNextSteps } from "@/lib/insights";
 import { SAMPLE_IDEA, SAMPLE_REPORT } from "@/lib/sample";
 import { cn, money } from "@/lib/utils";
-import { generatePlan, previewSynthesis, runSynthesis } from "@/services/planner";
+import { generatePlan, previewSynthesis, runSynthesis } from "@/engine/planner";
 import { SCORING_CONFIG } from "@/config/scoring";
 import type { AssumptionStatus, Finding, InterviewNote } from "@/types";
 
