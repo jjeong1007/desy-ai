@@ -130,7 +130,7 @@ Recorded so the next pass starts from decisions already made. Each item replaces
 
 - **Engine lives in `src/engine/`, not `src/server/engine/`.** The marketing demo (`scoring-visuals.tsx`) calls `generatePlan`, `runSynthesis` and `previewSynthesis` in the browser, so the template logic stays importable from both sides.
 - **Account is the single page for account matters.** Scoring weights and demo run options were removed from Settings (defaults apply: equal weights, no simulated partial failures, normal run length), `recordWeightsChange` and the `weights`/`partialFailure`/`reducedMotionRuns` settings were deleted, and the Data privacy page was folded into Account (`/app/settings/privacy` redirects).
-- **"Restore sample ideas" keeps its old behavior.** It replaces all ideas with the samples, because the confirmation copy on Dashboard and Data privacy already promises that.
+- **No sample data for regular accounts.** New accounts start empty and "Restore sample ideas" is gone. One private demo account for feedback sessions starts empty, created or wiped by `npm run demo:reset` (`scripts/demo-account.ts`, credentials in `.env.local`). `profiles.seeded_at` was dropped in migration `20261004010000`.
 - **Stale writes**: every idea write goes through `mutateIdea` (versioned read-modify-write with retry), and `savePlan` keeps the server's notes and synthesis. This replaces the planned `updated_at` comparison.
 - **Storage used** on Data privacy is an estimate made in the browser from the loaded workspace, not a server query.
 - **Supabase CLI**: uses the globally installed `supabase` binary. The npm `supabase` dev dependency was dropped because its install script is blocked by npm's allowScripts.

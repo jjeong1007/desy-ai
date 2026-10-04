@@ -26,9 +26,10 @@ Open [http://localhost:3000](http://localhost:3000). On Vercel, set the same thr
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint, zero warnings |
 | `npm test` | Vitest unit tests for scoring, report generation, and server actions (in-memory Supabase fake) |
+| `npm run demo:reset` | Creates the private demo account, or empties it (ideas and chats) for the next feedback session |
 | `node --env-file=.env.local scripts/check-rls.mjs` | Checks row-level security against your real project with two throwaway users |
 
-Sign up with email and password (or Google). Each new account gets the three sample ideas once. Ideas, chats, notes, and settings live in Postgres; every table has row-level security so users only see their own rows.
+Sign up with email and password (or Google). New accounts start empty. For feedback sessions there is one private demo account: set `DEMO_EMAIL` and `DEMO_PASSWORD` in `.env.local`, then run `npm run demo:reset` to create it, or to wipe its ideas and chats before the next session. Ideas, chats, notes, and settings live in Postgres; every table has row-level security so users only see their own rows.
 
 ## Route map
 
@@ -46,7 +47,7 @@ Sign up with email and password (or Google). Each new account gets the three sam
 - `/app/ideas/[id]` workspace with Overview, Data Sources, and Research Planner
 - `/app/ideas/[id]/run` simulated agent run, with Skip to results
 - `/app/ideas/[id]/print?doc=report` or `?doc=plan` print view
-- `/app/settings/account` profile, theme, your data (export, restore samples), sign out, delete account
+- `/app/settings/account` profile, theme, your data (export), sign out, delete account
 - `/app/settings/billing`, `/integrations` (MCP access tokens), `/support`. `/app/settings/privacy` redirects to Account
 
 **API**
@@ -154,7 +155,7 @@ Components call async functions in `src/services/*`, then write the returned ent
 
 | Module | What it does |
 | --- | --- |
-| `services/ideas.ts` | CRUD for ideas and drafts, weights history, restore samples |
+| `services/ideas.ts` | CRUD for ideas and drafts |
 | `services/analysis.ts` | Start a run (the server computes the analysis and a replayable `RunPlan`) and complete it |
 | `services/scoring.ts` | Pure scoring, shared by client and server. History scores are recomputed on the server |
 | `services/sources.ts` | Findings query and hide preview (pure); pin/note/hide on the server |

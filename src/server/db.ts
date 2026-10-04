@@ -1,7 +1,6 @@
 import "server-only";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { SCORING_CONFIG } from "@/config/scoring";
-import { SEED_IDEAS } from "@/mock/seeds";
 import { uid } from "@/lib/utils";
 import type { ChatMessage, ChatThread, HistoryEntry, Idea, Session, Settings } from "@/types";
 
@@ -93,7 +92,7 @@ export async function getIdeaRow(sb: SupabaseClient, userId: string, id: string)
 }
 
 export async function insertIdea(sb: SupabaseClient, userId: string, idea: Idea): Promise<Idea> {
-  const { data, error } = await sb.from("ideas").insert({ ...ideaToRow(idea), user_id: userId }).select("*").single();
+  const { data, error } = await sb.from("ideas").insert({ ...ideaToRow(idea), user_id: userId, version: 0 }).select("*").single();
   if (error) throw error;
   return rowToIdea(data as IdeaRow);
 }
@@ -125,39 +124,6 @@ export async function mutateIdea(sb: SupabaseClient, userId: string, id: string,
     if (data) return rowToIdea(data as IdeaRow);
   }
   throw new Error("The idea changed while saving. Try again.");
-}
-
-// ---------------------------------------------------------------- seeds
-
-/** Fresh copies of the sample ideas, stamped as new for this account. */
-export function seedIdeas(): Idea[] {
-  const now = new Date().toISOString();
-  return clone(SEED_IDEAS).map((i) => ({ ...i, seed: true, updatedAt: i.updatedAt ?? now }));
-}
-
-/** Inserts the sample ideas once per account. Safe to call on every bootstrap. */
-export async function ensureSeeded(sb: SupabaseClient, userId: string): Promise<void> {
-  const { data: claimed, error } = await sb
-    .from("profiles")
-    .update({ seeded_at: new Date().toISOString() })
-    .eq("id", userId)
-    .is("seeded_at", null)
-    .select("id");
-  if (error) throw error;
-  if (!claimed?.length) return; // already seeded (or another request just claimed it)
-  const rows = seedIdeas().map((i) => ({ ...ideaToRow(i), user_id: userId }));
-  const { error: insErr } = await sb.from("ideas").upsert(rows, { onConflict: "user_id,id", ignoreDuplicates: true });
-  if (insErr) throw insErr;
-}
-
-/** Replaces every idea with the samples. Chats, settings and the account stay. */
-export async function replaceWithSeeds(sb: SupabaseClient, userId: string): Promise<Idea[]> {
-  const { error } = await sb.from("ideas").delete().eq("user_id", userId);
-  if (error) throw error;
-  const rows = seedIdeas().map((i) => ({ ...ideaToRow(i), user_id: userId }));
-  const { error: insErr } = await sb.from("ideas").insert(rows);
-  if (insErr) throw insErr;
-  return listIdeaRows(sb, userId);
 }
 
 // ---------------------------------------------------------------- profile, settings, session
