@@ -95,8 +95,8 @@ export function Overview({ idea, report }: { idea: Idea; report: Report }) {
         <h2 id="hist-h">
           <button type="button" onClick={() => setHistOpen((o) => !o)} aria-expanded={histOpen} className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm font-medium">
             <span className="flex items-center gap-2">
-              <History className="size-4 text-muted" aria-hidden />
-              Idea history <span className="text-muted">({idea.history.length})</span>
+              <History className="size-4 text-fg-tertiary" aria-hidden />
+              Idea history <span className="text-fg-tertiary">({idea.history.length})</span>
             </span>
             <ChevronDown className={cn("size-4 transition-transform", histOpen && "rotate-180")} aria-hidden />
           </button>
@@ -106,7 +106,7 @@ export function Overview({ idea, report }: { idea: Idea; report: Report }) {
             {idea.history.map((h) => (
               <li key={h.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-[13px]">
                 <span className="text-ink">{h.summary}</span>
-                <span className="flex items-center gap-3 text-xs text-muted">
+                <span className="flex items-center gap-3 text-xs text-fg-tertiary">
                   {h.scoreAfter != null ? (
                     <span className="tnum text-ink-2">
                       {h.scoreBefore != null ? `${h.scoreBefore} → ` : ""}

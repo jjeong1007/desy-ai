@@ -28,7 +28,7 @@ export function DialogContent({ className, children, title, description, wide }:
             <DialogPrimitive.Title className="text-lg font-semibold tracking-tight">{title}</DialogPrimitive.Title>
             {description ? <DialogPrimitive.Description className="mt-1 text-sm text-ink-2">{description}</DialogPrimitive.Description> : <DialogPrimitive.Description className="sr-only">{title}</DialogPrimitive.Description>}
           </div>
-          <DialogPrimitive.Close className="rounded p-1 text-muted hover:bg-surface hover:text-ink" aria-label="Close">
+          <DialogPrimitive.Close className="rounded p-1 text-fg-tertiary hover:bg-surface hover:text-ink" aria-label="Close">
             <X className="size-4" />
           </DialogPrimitive.Close>
         </div>
@@ -80,7 +80,7 @@ export const DropdownMenuItem = React.forwardRef<HTMLDivElement, React.Component
 ));
 DropdownMenuItem.displayName = "DropdownMenuItem";
 export const DropdownMenuSeparator = () => <DropdownPrimitive.Separator className="my-1 h-px bg-line" />;
-export const DropdownMenuLabel = ({ children }: { children: React.ReactNode }) => <DropdownPrimitive.Label className="px-2 py-1.5 text-xs text-muted">{children}</DropdownPrimitive.Label>;
+export const DropdownMenuLabel = ({ children }: { children: React.ReactNode }) => <DropdownPrimitive.Label className="px-2 py-1.5 text-xs text-fg-tertiary">{children}</DropdownPrimitive.Label>;
 
 // ---- Popover
 export const Popover = PopoverPrimitive.Root;

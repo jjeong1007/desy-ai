@@ -3,23 +3,30 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// Figma Product v0: Geist Medium 14, px 12 py 8. Primary is #df5732 at 6px.
-// Quiet actions are #525252 with no fill.
+// Desy design system Button (Figma 99:20, 99:23). secondary/ghost/subtle/danger/link
+// are aliases so existing screens keep their roles while using these styles.
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors disabled:pointer-events-none disabled:opacity-32 [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        primary: "bg-accent text-white hover:bg-accent/90",
-        secondary: "border border-line bg-canvas text-ink-2 hover:bg-surface",
-        ghost: "rounded text-ink-2 hover:bg-surface hover:text-ink",
-        subtle: "bg-surface text-ink hover:bg-surface-2",
-        danger: "bg-weak text-white hover:bg-weak/90 dark:text-canvas",
-        link: "text-accent underline-offset-4 hover:underline px-0",
+        primary: "rounded-md bg-brand text-on-brand hover:bg-brand-hover active:bg-brand-active",
+        outline: "rounded-sm border border-line bg-canvas text-fg-secondary hover:bg-subtle active:bg-subtle",
+        quiet: "rounded-sm text-fg-secondary hover:bg-subtle active:bg-subtle",
+        secondary: "rounded-sm border border-line bg-canvas text-fg-secondary hover:bg-subtle active:bg-subtle",
+        ghost: "rounded-sm text-fg-secondary hover:bg-subtle active:bg-subtle",
+        subtle: "rounded-sm bg-subtle text-fg hover:bg-line",
+        danger: "rounded-md bg-frustration text-on-brand hover:bg-frustration/90",
+        link: "rounded-sm px-0 text-fg-brand underline-offset-4 hover:underline",
       },
-      size: { sm: "h-8 px-3 text-sm", md: "h-9 px-3 text-sm", lg: "h-10 px-3 text-sm", icon: "size-8" },
+      size: {
+        lg: "h-[41px] px-4 text-body",
+        md: "h-[33px] px-3 text-body",
+        sm: "h-[25px] px-2 text-small",
+        icon: "size-8 rounded-sm",
+      },
     },
-    defaultVariants: { variant: "secondary", size: "md" },
+    defaultVariants: { variant: "outline", size: "md" },
   },
 );
 

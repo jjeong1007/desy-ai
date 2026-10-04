@@ -20,7 +20,7 @@ export function LogoMark({ className, size = 12 }: { className?: string; size?: 
 
 export function Logo({ href = "/", className }: { href?: string; className?: string }) {
   return (
-    <Link href={href} className={cn("inline-flex items-center gap-1 rounded text-[19.368px] font-medium text-[#0d0d0d] dark:text-ink", className)} aria-label="Desy home">
+    <Link href={href} className={cn("inline-flex items-center gap-1 rounded text-[19px] font-medium text-gray-950 dark:text-fg", className)} aria-label="Desy home">
       <LogoMark size={11} />
       <span>Desy</span>
     </Link>

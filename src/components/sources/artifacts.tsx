@@ -28,7 +28,7 @@ export function Artifacts({ idea, report }: { idea: Idea; report: Report }) {
       <Artifact title="Competitor matrix" feeds="Competition filter">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-[13px]">
-            <thead className="text-xs text-muted">
+            <thead className="text-xs text-fg-tertiary">
               <tr>{["Name", "Pricing", "Target segment", "Strengths", "Gaps", "Funding"].map((h) => <th key={h} scope="col" className="pb-2 pr-4 font-medium">{h}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -45,7 +45,7 @@ export function Artifacts({ idea, report }: { idea: Idea; report: Report }) {
             </tbody>
           </table>
         </div>
-        <p className="mt-2 text-xs text-muted">Competitor names are fictional in this demo.</p>
+        <p className="mt-2 text-xs text-fg-tertiary">Competitor names are fictional in this demo.</p>
       </Artifact>
 
       <Artifact title="Market-sizing worksheet" feeds="Customer → Sizable customer base" tag="market-sizing">
@@ -58,7 +58,7 @@ export function Artifacts({ idea, report }: { idea: Idea; report: Report }) {
                 <dl className="mt-2 grid grid-cols-3 gap-2">
                   {(["tam", "sam", "som"] as const).map((x) => (
                     <div key={x} className="rounded bg-surface p-2">
-                      <dt className="text-[11px] text-muted">{x.toUpperCase()}</dt>
+                      <dt className="text-[11px] text-fg-tertiary">{x.toUpperCase()}</dt>
                       <dd className="tnum text-lg font-medium">{compact(m[x])}</dd>
                     </div>
                   ))}
@@ -106,13 +106,13 @@ export function Artifacts({ idea, report }: { idea: Idea; report: Report }) {
             <li key={pp.theme}>
               <div className="flex items-center justify-between gap-3">
                 <p className="text-[13px] font-medium">{pp.theme}</p>
-                <span className="tnum text-xs text-muted">{pp.mentions} mentions</span>
+                <span className="tnum text-xs text-fg-tertiary">{pp.mentions} mentions</span>
               </div>
               <div className="mt-1 h-1.5 rounded-full bg-surface-2"><div className="h-full rounded-full bg-ink/70" style={{ width: `${Math.min(100, (pp.mentions / Math.max(...a.painPoints.map((x) => x.mentions))) * 100)}%` }} /></div>
               <ul className="mt-2 space-y-1">
                 {pp.quotes.map((qq) => (
                   <li key={qq.text} className="border-l-2 border-accent/40 pl-2 text-[13px] italic text-ink-2">
-                    &ldquo;{qq.text}&rdquo; <span className="not-italic text-muted">({getSource(qq.sourceId).name})</span>
+                    &ldquo;{qq.text}&rdquo; <span className="not-italic text-fg-tertiary">({getSource(qq.sourceId).name})</span>
                   </li>
                 ))}
               </ul>
@@ -132,7 +132,7 @@ export function Artifacts({ idea, report }: { idea: Idea; report: Report }) {
             ["Build cost", idea.intake.buildPath === "hiredDeveloper" ? (a.unit.buildCost != null ? money(a.unit.buildCost) : "Not given") : "Your time"],
           ].map(([k, v]) => (
             <div key={k} className="rounded bg-surface p-2.5">
-              <dt className="text-[11px] text-muted">{k}</dt>
+              <dt className="text-[11px] text-fg-tertiary">{k}</dt>
               <dd className="tnum text-base font-medium">{v}</dd>
             </div>
           ))}

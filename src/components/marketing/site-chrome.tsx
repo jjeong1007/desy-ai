@@ -1,18 +1,23 @@
 "use client";
-import { Menu, X } from "lucide-react";
+import { ClipboardList, Gauge, Menu, MessagesSquare, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "@/components/logo";
+import { Container } from "@/components/marketing/layout";
+import { NavMenu, type NavMenuItem } from "@/components/marketing/parts";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { useDesy } from "@/store/desy";
 
-const LINKS = [
-  { href: "/#how", label: "How it works" },
-  { href: "/#scoring", label: "Scoring" },
-  { href: "/#sample", label: "Sample report" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/#faq", label: "FAQ" },
+const product: NavMenuItem[] = [
+  { icon: <Gauge />, title: "Idea de-risking", description: "A score, five filters, and a pursuit band", href: "/#scoring" },
+  { icon: <MessagesSquare />, title: "Data sources", description: "The findings behind every criterion", href: "/#sources" },
+  { icon: <ClipboardList />, title: "Research planner", description: "A discovery script for the weakest evidence", href: "/#planner" },
+  { icon: <Search />, title: "Sample report", description: "Invoice reminders for freelance designers", href: "/#sample" },
 ];
+
+const linkClass = "flex h-[33px] items-center rounded-sm text-body font-medium text-fg no-underline transition-colors hover:text-fg-secondary";
 
 export function SiteHeader() {
   const session = useDesy((s) => s.session);
@@ -21,97 +26,119 @@ export function SiteHeader() {
   const signedIn = hydrated && !!session;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-canvas">
-      <div className="mx-auto flex h-[66px] w-full max-w-[1120px] items-center justify-between gap-3 px-4 md:px-6">
-        <Logo />
-        <nav aria-label="Marketing" className="hidden items-center gap-1 lg:flex">
-          {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="rounded px-2.5 py-1.5 text-sm text-ink-2 hover:bg-surface hover:text-ink">
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="hidden items-center gap-2 sm:flex">
-          {signedIn ? (
-            <Button asChild variant="primary" size="sm">
-              <Link href="/app">Open app</Link>
-            </Button>
-          ) : (
-            <>
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/sign-in">Sign in</Link>
-              </Button>
-              <Button asChild variant="primary" size="sm">
-                <Link href="/sign-up">Validate an idea</Link>
-              </Button>
-            </>
-          )}
-        </div>
-        <Button variant="ghost" size="icon" className="lg:hidden" aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen((v) => !v)}>
-          {open ? <X /> : <Menu />}
-        </Button>
-      </div>
-      {open ? (
-        <nav id="mobile-nav" aria-label="Marketing" className="border-t border-line px-4 py-3 lg:hidden">
-          <ul className="flex flex-col gap-1">
-            {LINKS.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} onClick={() => setOpen(false)} className="block rounded px-2 py-2 text-sm text-ink-2 hover:bg-surface hover:text-ink">
-                  {l.label}
+    <header className="sticky top-0 z-30 border-b border-line bg-canvas">
+      <Container className="flex items-center justify-between py-4">
+        <div className="flex items-center gap-8">
+          <Logo />
+          <nav aria-label="Primary" className="hidden items-center gap-8 md:flex">
+            <NavMenu
+              label="Product"
+              items={product}
+              footer={
+                <Link href="/#faq" className="text-small font-medium text-fg-secondary no-underline hover:text-fg">
+                  Read the FAQ →
                 </Link>
-              </li>
+              }
+            />
+            <Link href="/#how" className={linkClass}>
+              How it works
+            </Link>
+            <Link href="/pricing" className={linkClass}>
+              Pricing
+            </Link>
+          </nav>
+        </div>
+        <div className="flex items-center gap-2">
+          {!signedIn && (
+            <Button asChild variant="quiet" size="lg" className="hidden sm:inline-flex">
+              <Link href="/sign-in">Sign in</Link>
+            </Button>
+          )}
+          <Button asChild size="lg" variant="primary">
+            <Link href={signedIn ? "/app" : "/sign-up"}>{signedIn ? "Open app" : "Validate an idea"}</Link>
+          </Button>
+          <ThemeToggle />
+          <IconButton label={open ? "Close menu" : "Open menu"} size="lg" className="md:hidden" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+            {open ? <X /> : <Menu />}
+          </IconButton>
+        </div>
+      </Container>
+      {open && (
+        <nav aria-label="Mobile" className="border-t border-line md:hidden">
+          <Container className="flex flex-col gap-1 py-4">
+            {product.map((it) => (
+              <Link key={it.title} href={it.href ?? "/"} onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-sm p-2 text-body font-medium text-fg no-underline hover:bg-subtle [&_svg]:size-4 [&_svg]:text-fg-secondary">
+                {it.icon}
+                {it.title}
+              </Link>
             ))}
-            <li className="mt-2 flex flex-col gap-2 sm:hidden">
-              {signedIn ? (
-                <Button asChild variant="primary">
-                  <Link href="/app">Open app</Link>
-                </Button>
-              ) : (
-                <>
-                  <Button asChild variant="secondary">
-                    <Link href="/sign-in">Sign in</Link>
-                  </Button>
-                  <Button asChild variant="primary">
-                    <Link href="/sign-up">Validate an idea</Link>
-                  </Button>
-                </>
-              )}
-            </li>
-          </ul>
+            <Link href="/pricing" onClick={() => setOpen(false)} className="rounded-sm p-2 text-body font-medium text-fg no-underline hover:bg-subtle">
+              Pricing
+            </Link>
+            {!signedIn && (
+              <Link href="/sign-in" onClick={() => setOpen(false)} className="rounded-sm p-2 text-body font-medium text-fg no-underline hover:bg-subtle sm:hidden">
+                Sign in
+              </Link>
+            )}
+          </Container>
         </nav>
-      ) : null}
+      )}
     </header>
   );
 }
 
+const footerLinks: Record<string, { label: string; href: string }[]> = {
+  Product: [
+    { label: "How it works", href: "/#how" },
+    { label: "Scoring", href: "/#scoring" },
+    { label: "Sources", href: "/#sources" },
+    { label: "Sample report", href: "/#sample" },
+    { label: "Pricing", href: "/pricing" },
+  ],
+  Account: [
+    { label: "Sign in", href: "/sign-in" },
+    { label: "Create account", href: "/sign-up" },
+    { label: "Open app", href: "/app" },
+  ],
+  Company: [{ label: "FAQ", href: "/#faq" }],
+};
+
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line">
-      <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-6 px-4 py-10 md:flex-row md:items-start md:justify-between md:px-6">
-        <div className="max-w-sm">
-          <Logo />
-          <p className="mt-3 text-sm leading-relaxed text-ink-2">Know whether your idea is worth building before you build it. This demo stores everything in your browser and simulates research agents.</p>
+    <footer className="border-t border-line bg-muted">
+      <Container className="flex flex-col gap-12 py-12">
+        <div className="grid gap-8 md:grid-cols-[2fr_1fr_1fr_1fr]">
+          <div className="flex flex-col gap-3">
+            <Logo />
+            <p className="m-0 max-w-[320px] text-body text-fg-secondary">Know whether your idea is worth building before you build it.</p>
+          </div>
+          {Object.entries(footerLinks).map(([group, links]) => (
+            <nav key={group} aria-label={group} className="flex flex-col gap-2">
+              <span className="text-small font-medium text-fg-tertiary">{group}</span>
+              {links.map((l) => (
+                <Link key={l.href} href={l.href} className="text-body text-fg-secondary no-underline transition-colors hover:text-fg">
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
+          ))}
         </div>
-        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-10 gap-y-2 text-sm">
-          <Link href="/#how" className="text-ink-2 hover:text-ink">How it works</Link>
-          <Link href="/#scoring" className="text-ink-2 hover:text-ink">How scoring works</Link>
-          <Link href="/#sources" className="text-ink-2 hover:text-ink">Sources</Link>
-          <Link href="/pricing" className="text-ink-2 hover:text-ink">Pricing</Link>
-          <Link href="/#faq" className="text-ink-2 hover:text-ink">FAQ</Link>
-          <Link href="/sign-in" className="text-ink-2 hover:text-ink">Sign in</Link>
-          <Link href="/sign-up" className="text-ink-2 hover:text-ink">Create account</Link>
-          <Link href="/app" className="text-ink-2 hover:text-ink">App</Link>
-        </nav>
-      </div>
+        <div className="flex flex-col justify-between gap-2 border-t border-line pt-6 text-small text-fg-tertiary sm:flex-row">
+          <span>© {new Date().getFullYear()} Desy. All rights reserved.</span>
+          <span>This demo stores everything in your browser.</span>
+        </div>
+      </Container>
     </footer>
   );
 }
 
 export function MarketingShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="flex min-h-screen flex-col bg-canvas text-fg">
       <SiteHeader />
-      <main id="main">{children}</main>
+      <main id="main" className="flex-1">
+        {children}
+      </main>
       <SiteFooter />
     </div>
   );

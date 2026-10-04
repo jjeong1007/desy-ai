@@ -33,7 +33,7 @@ export function ScoreRail({ score, band, uncappedBand, compact }: { score: numbe
         </div>
       </div>
       {!compact ? (
-        <div className="mt-1.5 flex w-full text-[11px] text-muted">
+        <div className="mt-1.5 flex w-full text-[11px] text-fg-tertiary">
           {segs.map((s) => (
             <span key={s.id} style={{ width: `${s.to - s.from}%` }} className={cn("flex items-center gap-1", s.id === band && "font-medium text-ink")}>
               {s.id === band && capped ? <Lock className="size-3" /> : null}
@@ -111,7 +111,7 @@ export function FilterChart({ report, onSelect, compact }: { report: Report; onS
           );
         })}
       </ul>
-      <p className="mt-2 text-[11px] text-muted">
+      <p className="mt-2 text-[11px] text-fg-tertiary">
         <span className="mr-1 inline-block h-2.5 w-px translate-y-0.5 bg-weak/60" aria-hidden />
         Knockout line at {C.knockoutBelow}
       </p>
@@ -184,7 +184,7 @@ export function ScoreHeader({ report, onPillar, onFilter, recalc, compact, headi
                 <dt className="text-ink-2">Confidence</dt>
                 <dd>
                   <ConfidenceText c={s.confidence} />
-                  <span className="text-muted"> ({report.coverage.withEvidence}/{report.coverage.total} criteria with evidence, {report.coverage.sources} sources)</span>
+                  <span className="text-fg-tertiary"> ({report.coverage.withEvidence}/{report.coverage.total} criteria with evidence, {report.coverage.sources} sources)</span>
                 </dd>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -195,7 +195,7 @@ export function ScoreHeader({ report, onPillar, onFilter, recalc, compact, headi
               </div>
             </dl>
           ) : null}
-          {!compact ? <p className="mt-1.5 text-xs text-muted">{weightsEqual ? "Equal weights by default; the course framework does not specify weights." : "Custom weights from Settings. The course framework does not specify weights."}</p> : null}
+          {!compact ? <p className="mt-1.5 text-xs text-fg-tertiary">{weightsEqual ? "Equal weights by default; the course framework does not specify weights." : "Custom weights from Settings. The course framework does not specify weights."}</p> : null}
           <div className="mt-5">
             <p className="mb-2 text-[13px] font-medium text-ink-2">Real / Win / Worth It gate</p>
             <RwwStrip report={report} onSelect={onPillar} />

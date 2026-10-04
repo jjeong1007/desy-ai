@@ -26,7 +26,7 @@ function TestsTag({ id }: { id: string }) {
   const isRww = !!RWW_BY_ID[id];
   return (
     <span className="inline-flex max-w-full items-center gap-1 truncate rounded bg-surface px-1.5 py-0.5 text-[11px] text-ink-2">
-      <span className="text-muted">{isRww ? PILLAR_BY_ID[RWW_BY_ID[id].pillar].label : FILTER_SHORT[CRITERION_BY_ID[id]?.filter ?? "customer"]}:</span>
+      <span className="text-fg-tertiary">{isRww ? PILLAR_BY_ID[RWW_BY_ID[id].pillar].label : FILTER_SHORT[CRITERION_BY_ID[id]?.filter ?? "customer"]}:</span>
       <span className="truncate">{tagLabel(id)}</span>
     </span>
   );
@@ -96,7 +96,7 @@ export function ResearchPlanner({ idea, report }: { idea: Idea; report: Report }
         <ol className="mt-3 grid gap-2 sm:grid-cols-2">
           {targets.map((t, i) => (
             <li key={t.id} className="flex items-start gap-2 rounded bg-canvas px-3 py-2 text-[13px]">
-              <span className="tnum mt-px text-xs font-medium text-muted">{i + 1}</span>
+              <span className="tnum mt-px text-xs font-medium text-fg-tertiary">{i + 1}</span>
               <span className="min-w-0">
                 <span className="block text-ink">{t.label}</span>
                 <span className="text-xs text-ink-2">{t.why}</span>
@@ -108,7 +108,7 @@ export function ResearchPlanner({ idea, report }: { idea: Idea; report: Report }
       </section>
 
       <section aria-labelledby="step1-h">
-        <h3 id="step1-h" className="text-base font-semibold"><span className="text-muted">Step 1</span> Choose a goal</h3>
+        <h3 id="step1-h" className="text-base font-semibold"><span className="text-fg-tertiary">Step 1</span> Choose a goal</h3>
         <div className="mt-3 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Plan goal">
           {(
             [
@@ -117,7 +117,7 @@ export function ResearchPlanner({ idea, report }: { idea: Idea; report: Report }
             ] as const
           ).map(([id, title, desc, Icon]) => (
             <button key={id} type="button" role="radio" aria-checked={goal === id} onClick={() => switchGoal(id)} className={cn("flex items-start gap-3 rounded-lg border p-4 text-left transition-colors", goal === id ? "border-accent bg-accent-tint/50" : "border-line hover:bg-surface")}>
-              <Icon className={cn("mt-0.5 size-5 shrink-0", goal === id ? "text-accent-strong" : "text-muted")} aria-hidden />
+              <Icon className={cn("mt-0.5 size-5 shrink-0", goal === id ? "text-accent-strong" : "text-fg-tertiary")} aria-hidden />
               <span>
                 <span className="block text-sm font-semibold">{title}</span>
                 <span className="mt-0.5 block text-[13px] text-ink-2">{desc}</span>
@@ -146,7 +146,7 @@ export function ResearchPlanner({ idea, report }: { idea: Idea; report: Report }
         <>
           <section aria-labelledby="step2-h">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h3 id="step2-h" className="text-base font-semibold"><span className="text-muted">Step 2</span> Your plan <span className="text-xs font-normal text-muted">Generated {fmtDate(plan.generatedAt)}. Edit anything; changes save automatically.</span></h3>
+              <h3 id="step2-h" className="text-base font-semibold"><span className="text-fg-tertiary">Step 2</span> Your plan <span className="text-xs font-normal text-fg-tertiary">Generated {fmtDate(plan.generatedAt)}. Edit anything; changes save automatically.</span></h3>
               <Button size="sm" variant="ghost" onClick={() => setConfirmRegen(true)} disabled={busy}><RefreshCw /> Regenerate</Button>
             </div>
             <ConfirmDialog open={confirmRegen} onOpenChange={setConfirmRegen} title="Regenerate the plan?" description="This replaces your edited personas, questions and pitch with a fresh plan based on the current report. Interview notes are kept." confirmLabel="Regenerate" onConfirm={() => generate(goal)} />
@@ -194,7 +194,7 @@ function DiscoveryPlan({ idea, plan, update }: { idea: Idea; plan: ResearchPlan;
             </div>
           )}
         />
-        {plan.personas.length === 0 ? <p className="mt-2 text-[13px] text-muted">No personas. Add one so you know who to talk to.</p> : null}
+        {plan.personas.length === 0 ? <p className="mt-2 text-[13px] text-fg-tertiary">No personas. Add one so you know who to talk to.</p> : null}
       </div>
 
       <QuestionBlock title="Screener questions" description="Qualify people before the call." items={plan.screener} onChange={(items) => update((p) => (p.screener = items))} />
@@ -233,7 +233,7 @@ function DiscoveryPlan({ idea, plan, update }: { idea: Idea; plan: ResearchPlan;
           <Button size="sm" onClick={async () => ((await copyText(plan.outreach)) ? toast.success("Outreach copied") : toast.error("Couldn't copy"))}><ClipboardCopy /> Copy message</Button>
         </div>
       </div>
-      <p className="text-xs text-muted">Every question is tagged with the criterion or RWW sub-question it tests, so synthesized answers can update the score. Idea: {idea.intake.name}.</p>
+      <p className="text-xs text-fg-tertiary">Every question is tagged with the criterion or RWW sub-question it tests, so synthesized answers can update the score. Idea: {idea.intake.name}.</p>
     </div>
   );
 }
@@ -241,7 +241,7 @@ function DiscoveryPlan({ idea, plan, update }: { idea: Idea; plan: ResearchPlan;
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div>
-      <p className="text-[11px] text-muted">{label}</p>
+      <p className="text-[11px] text-fg-tertiary">{label}</p>
       <InlineText multiline label={label} value={value} onChange={onChange} className="text-[13px]" />
     </div>
   );
@@ -307,7 +307,7 @@ function PitchPlan({ idea, plan, update }: { idea: Idea; plan: ResearchPlan; upd
                 <span className="rounded bg-surface px-1.5 py-0.5 text-[11px] text-ink-2">{pillarLabel(s.pillar)}</span>
               </div>
               <InlineText multiline label={`${s.title} text`} value={s.body} onChange={(v) => update((p) => (p.pitch[i].body = v))} className="text-sm" />
-              {s.findingIds.length ? <div className="mt-1 flex flex-wrap items-center gap-1.5"><span className="text-[11px] text-muted">Backed by</span><EvidenceLinks ids={s.findingIds} idea={idea} /></div> : <p className="mt-1 text-[11px] text-muted">No supporting finding yet.</p>}
+              {s.findingIds.length ? <div className="mt-1 flex flex-wrap items-center gap-1.5"><span className="text-[11px] text-fg-tertiary">Backed by</span><EvidenceLinks ids={s.findingIds} idea={idea} /></div> : <p className="mt-1 text-[11px] text-fg-tertiary">No supporting finding yet.</p>}
             </div>
           )}
         />
@@ -330,7 +330,7 @@ function PitchPlan({ idea, plan, update }: { idea: Idea; plan: ResearchPlan; upd
             <div>
               <InlineText multiline label="Objection" value={o.objection} onChange={(v) => update((p) => (p.objections[i].objection = v))} className="text-sm font-medium" />
               <InlineText multiline label="Suggested response" value={o.response} onChange={(v) => update((p) => (p.objections[i].response = v))} className="text-[13px] text-ink-2" />
-              <div className="mt-1 flex flex-wrap items-center gap-1.5"><span className="text-[11px] text-muted">From: {o.source}</span><EvidenceLinks ids={o.findingIds} idea={idea} max={2} /></div>
+              <div className="mt-1 flex flex-wrap items-center gap-1.5"><span className="text-[11px] text-fg-tertiary">From: {o.source}</span><EvidenceLinks ids={o.findingIds} idea={idea} max={2} /></div>
             </div>
           )}
         />
@@ -406,7 +406,7 @@ function Synthesis({ idea, report, plan }: { idea: Idea; report: Report; plan: R
   return (
     <section aria-labelledby="step3-h" className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 id="step3-h" className="text-base font-semibold"><span className="text-muted">Step 3</span> Synthesis</h3>
+        <h3 id="step3-h" className="text-base font-semibold"><span className="text-fg-tertiary">Step 3</span> Synthesis</h3>
         {plan.notes.length === 0 ? <Button size="sm" variant="ghost" onClick={useSamples}><FileText /> Use sample notes</Button> : null}
       </div>
 
@@ -433,7 +433,7 @@ function Synthesis({ idea, report, plan }: { idea: Idea; report: Report; plan: R
           </div>
           <label htmlFor="n-text" className="mt-3 block text-xs font-medium">Notes</label>
           <Textarea id="n-text" value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} aria-invalid={!!errors.text} aria-describedby="n-text-help" placeholder={'Paste notes or a transcript. Put direct quotes in "double quotes" so they show up as snippets.'} className="mt-1 min-h-[140px]" />
-          <p id="n-text-help" className={cn("mt-1 text-xs", errors.text ? "text-weak" : "text-muted")}>{errors.text ?? "Quotes in double quotes are pulled out as representative snippets."}</p>
+          <p id="n-text-help" className={cn("mt-1 text-xs", errors.text ? "text-weak" : "text-fg-tertiary")}>{errors.text ?? "Quotes in double quotes are pulled out as representative snippets."}</p>
           <div className="mt-3 flex justify-end">
             <Button variant="primary" size="sm" onClick={addNote}><Plus /> Add notes</Button>
           </div>
@@ -441,7 +441,7 @@ function Synthesis({ idea, report, plan }: { idea: Idea; report: Report; plan: R
 
         <div className="rounded-lg border border-line bg-canvas">
           <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
-            <p className="text-sm font-semibold">Interviews <span className="tnum font-normal text-muted">({plan.notes.length})</span></p>
+            <p className="text-sm font-semibold">Interviews <span className="tnum font-normal text-fg-tertiary">({plan.notes.length})</span></p>
             <Button size="sm" variant="primary" onClick={runSyn} disabled={plan.notes.length === 0 || busy !== null}>
               <Sparkles /> {busy === "syn" ? "Synthesizing…" : syn ? "Synthesize again" : "Synthesize"}
             </Button>
@@ -458,9 +458,9 @@ function Synthesis({ idea, report, plan }: { idea: Idea; report: Report; plan: R
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="text-[13px] font-medium">{n.interviewee}</p>
-                      <p className="text-xs text-muted">{personaName(n.personaId)} · {fmtDate(n.date)}</p>
+                      <p className="text-xs text-fg-tertiary">{personaName(n.personaId)} · {fmtDate(n.date)}</p>
                     </div>
-                    <button type="button" onClick={() => setDel(n.id)} className="rounded p-1 text-muted hover:bg-weak-tint hover:text-weak" aria-label={`Delete notes from ${n.interviewee}`}><Trash2 className="size-3.5" /></button>
+                    <button type="button" onClick={() => setDel(n.id)} className="rounded p-1 text-fg-tertiary hover:bg-weak-tint hover:text-weak" aria-label={`Delete notes from ${n.interviewee}`}><Trash2 className="size-3.5" /></button>
                   </div>
                   <p className="mt-1 line-clamp-3 text-[13px] text-ink-2">{n.text}</p>
                 </li>
@@ -488,25 +488,25 @@ function Synthesis({ idea, report, plan }: { idea: Idea; report: Report; plan: R
         <div className="rounded-lg border border-dashed border-line-strong p-6 text-center text-[13px] text-ink-2">Not synthesized yet. Themes, quotes, and an assumption tracker will appear here.</div>
       ) : (
         <div className="space-y-4">
-          <p className="text-xs text-muted">Synthesized {fmtDate(syn.at, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })} from {plan.notes.length} interview{plan.notes.length === 1 ? "" : "s"}. Synthesize again after adding notes.</p>
+          <p className="text-xs text-fg-tertiary">Synthesized {fmtDate(syn.at, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })} from {plan.notes.length} interview{plan.notes.length === 1 ? "" : "s"}. Synthesize again after adding notes.</p>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-lg border border-line bg-canvas p-4">
               <p className="text-sm font-semibold">Recurring themes</p>
               <ul className="mt-3 space-y-2.5">
                 {syn.themes.map((t) => (
                   <li key={t.theme}>
-                    <div className="flex justify-between text-[13px]"><span>{t.theme}</span><span className="tnum text-muted">{t.count} of {plan.notes.length}</span></div>
+                    <div className="flex justify-between text-[13px]"><span>{t.theme}</span><span className="tnum text-fg-tertiary">{t.count} of {plan.notes.length}</span></div>
                     <div className="mt-1 h-1.5 rounded-full bg-surface-2"><div className="h-full rounded-full bg-ink/70" style={{ width: `${(t.count / Math.max(1, plan.notes.length)) * 100}%` }} /></div>
                   </li>
                 ))}
-                {syn.themes.length === 0 ? <li className="text-[13px] text-muted">No recurring themes found.</li> : null}
+                {syn.themes.length === 0 ? <li className="text-[13px] text-fg-tertiary">No recurring themes found.</li> : null}
               </ul>
             </div>
             <div className="rounded-lg border border-line bg-canvas p-4">
               <p className="text-sm font-semibold">Representative quotes</p>
               <ul className="mt-3 space-y-2">
-                {syn.quotes.map((q) => <li key={q.text} className="border-l-2 border-accent/40 pl-2 text-[13px] italic text-ink-2">&ldquo;{q.text}&rdquo; <span className="not-italic text-muted">({q.interviewee})</span></li>)}
-                {syn.quotes.length === 0 ? <li className="text-[13px] text-muted">No quoted lines. Put direct quotes in double quotes.</li> : null}
+                {syn.quotes.map((q) => <li key={q.text} className="border-l-2 border-accent/40 pl-2 text-[13px] italic text-ink-2">&ldquo;{q.text}&rdquo; <span className="not-italic text-fg-tertiary">({q.interviewee})</span></li>)}
+                {syn.quotes.length === 0 ? <li className="text-[13px] text-fg-tertiary">No quoted lines. Put direct quotes in double quotes.</li> : null}
               </ul>
             </div>
           </div>
@@ -520,10 +520,10 @@ function Synthesis({ idea, report, plan }: { idea: Idea; report: Report; plan: R
                   <li key={a.id} className="grid gap-2 px-4 py-3 sm:grid-cols-[minmax(0,1fr)_120px]">
                     <div className="min-w-0">
                       <p className="text-[13px] font-medium">{a.label}</p>
-                      <p className="text-xs text-muted">{a.refKind === "criterion" ? `${FILTER_SHORT[CRITERION_BY_ID[a.refId].filter]} criterion` : `${PILLAR_BY_ID[RWW_BY_ID[a.refId].pillar].label} sub-question`}</p>
+                      <p className="text-xs text-fg-tertiary">{a.refKind === "criterion" ? `${FILTER_SHORT[CRITERION_BY_ID[a.refId].filter]} criterion` : `${PILLAR_BY_ID[RWW_BY_ID[a.refId].pillar].label} sub-question`}</p>
                       {a.evidence.length ? (
-                        <ul className="mt-1.5 space-y-1">{a.evidence.map((e, i) => <li key={i} className="text-xs text-ink-2">&ldquo;{e.snippet}&rdquo; <span className="text-muted">({plan.notes.find((n) => n.id === e.noteId)?.interviewee ?? "note"})</span></li>)}</ul>
-                      ) : <p className="mt-1 text-xs text-muted">No notes speak to this yet.</p>}
+                        <ul className="mt-1.5 space-y-1">{a.evidence.map((e, i) => <li key={i} className="text-xs text-ink-2">&ldquo;{e.snippet}&rdquo; <span className="text-fg-tertiary">({plan.notes.find((n) => n.id === e.noteId)?.interviewee ?? "note"})</span></li>)}</ul>
+                      ) : <p className="mt-1 text-xs text-fg-tertiary">No notes speak to this yet.</p>}
                     </div>
                     <span className={cn("inline-flex h-fit w-fit items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium sm:justify-self-end [&_svg]:size-3", s.cls)}><s.Icon aria-hidden />{s.label}</span>
                   </li>
@@ -565,15 +565,15 @@ function ScoreImpact({ preview, onApply, busy }: { preview: NonNullable<ReturnTy
       </div>
       <div className="mt-3">
         <Row label="1. Criteria">
-          {d.criteria.length ? d.criteria.map((c) => <div key={c.id} className="flex flex-wrap items-center justify-between gap-2"><span>{c.label}</span><span className="flex items-center gap-2"><CriterionDots score={c.before} /> → <CriterionDots score={c.after} /></span></div>) : <span className="text-muted">No criterion changes</span>}
+          {d.criteria.length ? d.criteria.map((c) => <div key={c.id} className="flex flex-wrap items-center justify-between gap-2"><span>{c.label}</span><span className="flex items-center gap-2"><CriterionDots score={c.before} /> → <CriterionDots score={c.after} /></span></div>) : <span className="text-fg-tertiary">No criterion changes</span>}
         </Row>
         <Row label="2. Filters and confidence">
-          {d.filters.length ? d.filters.map((f) => <div key={f.id} className="flex justify-between gap-2"><span>{FILTER_SHORT[f.id]}</span><span className="tnum">{f.before ?? "—"} → {f.after ?? "—"} <span className="text-muted">({f.confBefore} → {f.confAfter} confidence)</span></span></div>) : <span className="text-muted">No filter changes</span>}
+          {d.filters.length ? d.filters.map((f) => <div key={f.id} className="flex justify-between gap-2"><span>{FILTER_SHORT[f.id]}</span><span className="tnum">{f.before ?? "—"} → {f.after ?? "—"} <span className="text-fg-tertiary">({f.confBefore} → {f.confAfter} confidence)</span></span></div>) : <span className="text-fg-tertiary">No filter changes</span>}
         </Row>
         <Row label="3. Real / Win / Worth It">
           {d.rww.map((r) => <div key={r.id} className="flex flex-wrap items-center justify-between gap-2"><span>{r.text.split(" (")[0]}</span><span className="flex items-center gap-1.5"><AnswerPill answer={r.before} /> → <AnswerPill answer={r.after} /></span></div>)}
           {d.pillars.map((p) => <div key={p.id} className="flex items-center justify-between gap-2 font-medium"><span>{PILLAR_BY_ID[p.id].label} net</span><span className="flex items-center gap-1.5"><NetPill net={p.before} size="sm" /> → <NetPill net={p.after} size="sm" /></span></div>)}
-          {!d.rww.length && !d.pillars.length ? <span className="text-muted">No answer changes</span> : null}
+          {!d.rww.length && !d.pillars.length ? <span className="text-fg-tertiary">No answer changes</span> : null}
         </Row>
         <Row label="4. Desy Score">
           <span className="tnum text-lg font-medium">{d.score.before} → {d.score.after}</span>
@@ -582,7 +582,7 @@ function ScoreImpact({ preview, onApply, busy }: { preview: NonNullable<ReturnTy
           <div className="flex flex-wrap items-center gap-1.5"><BandBadge band={before.score.band} capped={before.score.band !== before.score.uncappedBand} size="sm" /> → <BandBadge band={after.score.band} capped={after.score.band !== after.score.uncappedBand} size="sm" /></div>
           <p className="text-xs text-ink-2">Caps before: {before.score.capReasons.length ? before.score.capReasons.join(" ") : "none"}</p>
           <p className="text-xs text-ink-2">Caps after: {after.score.capReasons.length ? after.score.capReasons.join(" ") : "none"}</p>
-          <p className="text-xs text-muted">{BAND_SHORT[before.score.band]} → {BAND_SHORT[after.score.band]}</p>
+          <p className="text-xs text-fg-tertiary">{BAND_SHORT[before.score.band]} → {BAND_SHORT[after.score.band]}</p>
         </Row>
       </div>
     </div>

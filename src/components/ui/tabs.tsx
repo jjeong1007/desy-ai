@@ -37,7 +37,7 @@ export function PillTabs<T extends string>({ tabs, value, onChange, label, class
             className={cn("flex shrink-0 items-center gap-1.5 rounded px-3 py-2 text-sm font-medium transition-colors", active ? "bg-accent-tint text-accent" : "text-ink-2 hover:bg-surface hover:text-ink")}
           >
             {t.label}
-            {t.count != null ? <span className={cn("tnum text-xs", active ? "text-accent/80" : "text-muted")}>{t.count}</span> : null}
+            {t.count != null ? <span className={cn("tnum text-xs", active ? "text-accent/80" : "text-fg-tertiary")}>{t.count}</span> : null}
           </button>
         );
       })}

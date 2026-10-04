@@ -112,7 +112,7 @@ export function AgentRun() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[13px] font-medium text-accent-strong">Research run</p>
-          <h1 className="mt-1 text-[32px] font-semibold leading-none">{idea.intake.name || "Untitled idea"}</h1>
+          <h1 className="mt-1 text-page-title font-semibold">{idea.intake.name || "Untitled idea"}</h1>
           <p className="mt-1 text-sm text-ink-2">
             Agents work in parallel, then the framework agent scores the findings. About {Math.round(plan.totalMs / 1000)} seconds.
             <span className="tnum ml-2 text-ink">{clock(Math.min(elapsed, plan.totalMs))} / {clock(plan.totalMs)}</span>
@@ -147,16 +147,16 @@ export function AgentRun() {
                 <StatusBadge status={status} />
               </div>
               {meta && meta.sourceIds.length ? (
-                <p className="mt-2 text-xs text-muted">{meta.sourceIds.map((s) => getSource(s).name).join(" · ")}</p>
+                <p className="mt-2 text-xs text-fg-tertiary">{meta.sourceIds.map((s) => getSource(s).name).join(" · ")}</p>
               ) : (
-                <p className="mt-2 text-xs text-muted">Runs after the research agents</p>
+                <p className="mt-2 text-xs text-fg-tertiary">Runs after the research agents</p>
               )}
               <div className="mt-3">
                 <Progress value={progress} label={`${meta?.name ?? "Agent"} progress`} tone={status === "failed" ? "weak" : status === "done" ? "strong" : "accent"} />
               </div>
               <p className="tnum mt-2 text-xs text-ink-2">{findings} finding{findings === 1 ? "" : "s"}</p>
               <ol className="mt-3 space-y-1.5" aria-live="polite" aria-relevant="additions">
-                {logs.length === 0 ? <li className="text-xs text-muted">Waiting…</li> : null}
+                {logs.length === 0 ? <li className="text-xs text-fg-tertiary">Waiting…</li> : null}
                 {logs.slice(-4).map((line, i) => (
                   <li key={`${agent.id}-${logCount}-${i}`} className="font-mono text-[12px] leading-relaxed text-ink-2">{line}</li>
                 ))}

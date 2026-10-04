@@ -37,7 +37,7 @@ export function SourceLabel({ sourceId, className }: { sourceId: string; classNa
   const Icon = CAT_ICON[s.category] ?? Search;
   return (
     <span className={cn("inline-flex items-center gap-1 text-xs font-medium text-ink-2", className)}>
-      <Icon className="size-3.5 text-muted" aria-hidden />
+      <Icon className="size-3.5 text-fg-tertiary" aria-hidden />
       {s.name}
     </span>
   );
@@ -90,7 +90,7 @@ export function DataSources({ idea, report }: { idea: Idea; report: Report }) {
           <div className="rounded-lg border border-line bg-surface p-3">
             <div className="flex flex-wrap gap-2">
               <div className="relative min-w-[200px] flex-1">
-                <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
+                <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-fg-tertiary" aria-hidden />
                 <Input value={q.search} onChange={(e) => setQ({ ...q, search: e.target.value })} placeholder="Search findings, excerpts and notes" aria-label="Search findings" className="pl-8" />
               </div>
               <Select aria-label="Show" value={q.show} onChange={(e) => setQ({ ...q, show: e.target.value as FindingQuery["show"] })}>
@@ -190,19 +190,19 @@ function FindingRow({ f, idea, onOpen }: { f: Finding; idea: Idea; onOpen: () =>
       <button type="button" onClick={onOpen} className="block w-full px-4 py-3.5 text-left hover:bg-surface">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <SourceLabel sourceId={f.sourceId} />
-          <span className="text-xs text-muted">{FINDING_TYPE_LABEL[f.type]}</span>
-          <span className="text-xs text-muted">{fmtDate(f.retrievedAt, { month: "short", day: "numeric" })}</span>
+          <span className="text-xs text-fg-tertiary">{FINDING_TYPE_LABEL[f.type]}</span>
+          <span className="text-xs text-fg-tertiary">{fmtDate(f.retrievedAt, { month: "short", day: "numeric" })}</span>
           <span className="ml-auto flex items-center gap-2">
             {st?.pinned ? <Pin className="size-3.5 text-accent-strong" aria-label="Pinned" /> : null}
-            {st?.note ? <StickyNote className="size-3.5 text-muted" aria-label="Has a note" /> : null}
-            {st?.hidden ? <span className="inline-flex items-center gap-1 text-xs text-muted"><EyeOff className="size-3.5" aria-hidden />Hidden</span> : null}
+            {st?.note ? <StickyNote className="size-3.5 text-fg-tertiary" aria-label="Has a note" /> : null}
+            {st?.hidden ? <span className="inline-flex items-center gap-1 text-xs text-fg-tertiary"><EyeOff className="size-3.5" aria-hidden />Hidden</span> : null}
             <SentimentTag s={f.sentiment} />
           </span>
         </div>
         <p className={cn("mt-1.5 text-sm font-medium text-ink", st?.hidden && "line-through decoration-muted")}>{f.title}</p>
         <p className="mt-0.5 line-clamp-2 text-[13px] text-ink-2">{f.summary}</p>
         {f.excerpt ? <p className="mt-1.5 line-clamp-1 border-l-2 border-line pl-2 text-[13px] italic text-ink-2">&ldquo;{f.excerpt}&rdquo;</p> : null}
-        <p className="mt-1.5 text-xs text-muted">
+        <p className="mt-1.5 text-xs text-fg-tertiary">
           Confidence <ConfidenceText c={f.confidence} /> · cited by {f.criterionIds.length + f.rwwIds.length} score item{f.criterionIds.length + f.rwwIds.length === 1 ? "" : "s"}
         </p>
       </button>
@@ -232,8 +232,8 @@ function FindingDetail({ f, idea }: { f: Finding; idea: Idea }) {
     <div className="space-y-5 p-4">
       <div className="flex flex-wrap items-center gap-3">
         <SourceLabel sourceId={f.sourceId} />
-        <span className="text-xs text-muted">{FINDING_TYPE_LABEL[f.type]}</span>
-        <span className="text-xs text-muted">Found by {AGENT_NAME[f.agentId]}</span>
+        <span className="text-xs text-fg-tertiary">{FINDING_TYPE_LABEL[f.type]}</span>
+        <span className="text-xs text-fg-tertiary">Found by {AGENT_NAME[f.agentId]}</span>
         <SentimentTag s={f.sentiment} />
       </div>
       <div>
@@ -242,9 +242,9 @@ function FindingDetail({ f, idea }: { f: Finding; idea: Idea }) {
         {f.excerpt ? <blockquote className="mt-3 border-l-2 border-accent/50 pl-3 text-sm italic leading-relaxed text-ink-2">&ldquo;{f.excerpt}&rdquo;</blockquote> : null}
       </div>
       <dl className="grid grid-cols-2 gap-3 text-[13px]">
-        <div><dt className="text-xs text-muted">Retrieved</dt><dd>{fmtDate(f.retrievedAt)}</dd></div>
-        <div><dt className="text-xs text-muted">Confidence</dt><dd><ConfidenceText c={f.confidence} /></dd></div>
-        <div className="col-span-2"><dt className="text-xs text-muted">Link (mock URL)</dt><dd><a href={f.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 break-all text-accent-strong hover:underline">{f.url}<ExternalLink className="size-3 shrink-0" aria-hidden /></a></dd></div>
+        <div><dt className="text-xs text-fg-tertiary">Retrieved</dt><dd>{fmtDate(f.retrievedAt)}</dd></div>
+        <div><dt className="text-xs text-fg-tertiary">Confidence</dt><dd><ConfidenceText c={f.confidence} /></dd></div>
+        <div className="col-span-2"><dt className="text-xs text-fg-tertiary">Link (mock URL)</dt><dd><a href={f.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 break-all text-accent-strong hover:underline">{f.url}<ExternalLink className="size-3 shrink-0" aria-hidden /></a></dd></div>
       </dl>
 
       <div>
@@ -255,7 +255,7 @@ function FindingDetail({ f, idea }: { f: Finding; idea: Idea }) {
             {used.criteria.map((c) => (
               <li key={c.id}>
                 <Link href={`/app/ideas/${idea.id}?tab=overview#filter-${CRITERIA.find((x) => x.id === c.id)?.filter}`} className="text-[13px] text-ink hover:underline">
-                  <span className="text-muted">{c.filter} criterion: </span>{c.label}
+                  <span className="text-fg-tertiary">{c.filter} criterion: </span>{c.label}
                 </Link>
               </li>
             ))}
@@ -264,7 +264,7 @@ function FindingDetail({ f, idea }: { f: Finding; idea: Idea }) {
         {used.rww.length ? (
           <ul className="mt-2 space-y-1">
             {used.rww.map((r) => (
-              <li key={r.id} className="text-[13px]"><span className="text-muted">{r.pillar}: </span>{r.text}</li>
+              <li key={r.id} className="text-[13px]"><span className="text-fg-tertiary">{r.pillar}: </span>{r.text}</li>
             ))}
           </ul>
         ) : null}
@@ -310,11 +310,11 @@ function HidePreview({ open, onOpenChange, idea, finding, hide, weights }: { ope
           <div className="space-y-4 text-[13px]">
             <div className="flex flex-wrap items-center gap-4 rounded bg-surface p-3">
               <div>
-                <p className="text-xs text-muted">Desy Score</p>
+                <p className="text-xs text-fg-tertiary">Desy Score</p>
                 <p className="tnum text-xl font-medium">{d.score.before} → {d.score.after}</p>
               </div>
               <div>
-                <p className="text-xs text-muted">Pursuit band</p>
+                <p className="text-xs text-fg-tertiary">Pursuit band</p>
                 <p className="flex items-center gap-1.5"><BandBadge band={d.band.before} size="sm" /> → <BandBadge band={d.band.after} size="sm" capped={pv!.after.score.band !== pv!.after.score.uncappedBand} /></p>
               </div>
             </div>
@@ -340,7 +340,7 @@ function HidePreview({ open, onOpenChange, idea, finding, hide, weights }: { ope
                 <li>After: {d.caps.after.length ? d.caps.after.join(" ") : "none"}</li>
               </DiffBlock>
             ) : null}
-            <p className="text-xs text-muted">Band labels: {BAND_SHORT[d.band.before]} before, {BAND_SHORT[d.band.after]} after.</p>
+            <p className="text-xs text-fg-tertiary">Band labels: {BAND_SHORT[d.band.before]} before, {BAND_SHORT[d.band.after]} after.</p>
           </div>
         )}
         <div className="mt-5 flex justify-end gap-2">

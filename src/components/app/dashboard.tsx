@@ -8,7 +8,9 @@ import { FILTERS, FILTER_SHORT, PILLAR_BY_ID } from "@/config/criteria";
 import { SCORING_CONFIG } from "@/config/scoring";
 import { PageSkeleton } from "@/components/app/app-shell";
 import { BandBadge, NetPill } from "@/components/report/markers";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Select } from "@/components/ui/field";
 import { ConfirmDialog } from "@/components/ui/overlay";
 import { Segmented } from "@/components/ui/tabs";
@@ -87,8 +89,8 @@ export function Dashboard() {
   return (
     <div className="mx-auto w-full max-w-[1178px] px-4 py-6 md:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-[32px] font-semibold leading-none">Ideas</h1>
-        <Button asChild variant="ghost" className="text-ink-2">
+        <h1 className="text-page-title font-semibold">Ideas</h1>
+        <Button asChild variant="quiet">
           <Link href="/app/ideas/new">
             <Plus /> New idea
           </Link>
@@ -97,8 +99,8 @@ export function Dashboard() {
 
       {ideas.length === 0 ? (
         <div className="mt-16 flex flex-col items-center px-6 text-center">
-          <FolderOpen className="size-8 text-muted" strokeWidth={1.25} aria-hidden />
-          <h2 className="mt-4 text-[32px] font-medium leading-none">No ideas just yet.</h2>
+          <FolderOpen className="size-8 text-fg-tertiary" strokeWidth={1.25} aria-hidden />
+          <h2 className="mt-4 text-page-title font-medium">No ideas just yet.</h2>
           <p className="mt-3 max-w-md text-sm font-medium text-ink-2">The samples cover a strong pursuit, a promising one, and a weak pursuit that is capped. They show how the gate works.</p>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             <Button asChild variant="primary">
@@ -280,26 +282,31 @@ function CompareBox({ idea, enabled, checked, onToggle }: { idea: Idea; enabled:
 function IdeaCard({ idea, report, selected, onToggle, onDelete }: { idea: Idea; report: Report | null; selected: boolean; onToggle: () => void; onDelete: () => void }) {
   const capped = !!report && report.score.band !== report.score.uncappedBand;
   return (
-    <article className={cn("flex h-full flex-col overflow-hidden rounded-lg border bg-canvas", selected ? "border-accent" : "border-line")}>
-      <div className="relative flex h-[105px] items-center justify-center bg-[rgb(var(--well))]">
-        <p className="tnum text-[32px] font-semibold leading-none text-ink">{report ? report.score.overall : "—"}</p>
-        <div className="absolute left-2 top-2">
-          <CompareBox idea={idea} enabled={!!report} checked={selected} onToggle={onToggle} />
-        </div>
-        <div className="absolute right-1 top-1">
-          <Button size="icon" variant="ghost" aria-label={`Delete ${idea.intake.name || "idea"}`} onClick={onDelete}>
-            <Trash2 />
-          </Button>
-        </div>
-      </div>
-      <Link href={hrefFor(idea)} className="flex flex-1 flex-col p-3 outline-offset-4">
-        <h2 className="text-base font-semibold leading-snug">{idea.intake.name || "Untitled draft"}</h2>
-        <p className="mt-1 line-clamp-2 text-xs font-medium text-ink-2">{idea.intake.oneLiner || "No description yet."}</p>
-        <div className="mt-3">{report ? <BandBadge band={report.score.band} capped={capped} size="sm" /> : <span className="text-xs font-medium text-muted">{idea.status === "draft" ? "Finish intake to score it" : "Analysis in progress"}</span>}</div>
-        {report ? <div className="mt-2"><RwwRow report={report} /></div> : null}
-        <p className="mt-auto pt-3 text-xs font-medium text-muted">Last run {relTime(idea.lastRunAt)}</p>
-      </Link>
-    </article>
+    <Card
+      className={cn("h-full", selected && "border-brand")}
+      title={<Link href={hrefFor(idea)} className="text-fg no-underline">{idea.intake.name || "Untitled draft"}</Link>}
+      description={
+        <span className="flex flex-col gap-2">
+          <span className="line-clamp-2 text-fg-secondary">{idea.intake.oneLiner || "No description yet."}</span>
+          <span>{report ? <BandBadge band={report.score.band} capped={capped} size="sm" /> : <span>{idea.status === "draft" ? "Finish intake to score it" : "Analysis in progress"}</span>}</span>
+          {report ? <RwwRow report={report} /> : null}
+          <span>Last run {relTime(idea.lastRunAt)}</span>
+        </span>
+      }
+      media={
+        <span className="relative flex items-center justify-center">
+          <span className="tnum text-page-title font-semibold text-fg">{report ? report.score.overall : "—"}</span>
+          <span className="absolute left-2 top-2">
+            <CompareBox idea={idea} enabled={!!report} checked={selected} onToggle={onToggle} />
+          </span>
+          <span className="absolute right-1 top-1">
+            <IconButton label={`Delete ${idea.intake.name || "idea"}`} onClick={onDelete}>
+              <Trash2 />
+            </IconButton>
+          </span>
+        </span>
+      }
+    />
   );
 }
 

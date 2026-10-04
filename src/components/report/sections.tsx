@@ -30,7 +30,7 @@ export function EvidenceLinks({ ids, idea, max = 3 }: { ids: string[]; idea: Ide
         );
       })}
       {list.length > max ? (
-        <Link href={`/app/ideas/${idea.id}?tab=sources`} className="text-[11px] text-muted hover:text-ink">
+        <Link href={`/app/ideas/${idea.id}?tab=sources`} className="text-[11px] text-fg-tertiary hover:text-ink">
           +{list.length - max} more
         </Link>
       ) : null}
@@ -61,10 +61,10 @@ export function CriterionRow({ c, idea }: { c: CriterionScore; idea: Idea }) {
       <div className="min-w-0">
         <p className="text-sm font-medium text-ink">{c.label}</p>
         <p className="mt-0.5 text-[13px] leading-relaxed text-ink-2">
-          <span className="text-muted">Solo SaaS reading: </span>
+          <span className="text-fg-tertiary">Solo SaaS reading: </span>
           {c.soloReading}
         </p>
-        {def?.note ? <p className="mt-1 text-xs text-muted">{def.note}</p> : null}
+        {def?.note ? <p className="mt-1 text-xs text-fg-tertiary">{def.note}</p> : null}
         <p className={cn("mt-2 text-[13px] leading-relaxed", c.score == null ? "text-ink-2" : "text-ink")}>{c.justification || (c.score == null ? "No supporting findings yet. Added to Key assumptions to test." : "")}</p>
         <div className="mt-2 flex flex-wrap items-center gap-1.5">
           <OriginTag c={c} />
@@ -98,7 +98,7 @@ export function FilterCard({ f, idea, defaultOpen, idPrefix = "" }: { f: FilterS
             <div>
               <p className="tnum text-[32px] font-semibold leading-none text-ink">
                 {f.score ?? "—"}
-                <span className="text-sm font-normal text-muted">/100</span>
+                <span className="text-sm font-normal text-fg-tertiary">/100</span>
               </p>
               <p className="mt-1 text-xs text-ink-2">
                 Confidence <ConfidenceText c={f.confidence} /> · weight {Math.round(f.weight)}%
@@ -125,7 +125,7 @@ export function FilterCard({ f, idea, defaultOpen, idPrefix = "" }: { f: FilterS
           <FrameworkTag id="filters" />
           <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls={panelId} className="inline-flex items-center gap-1 rounded px-2 py-1 text-[13px] font-medium text-ink-2 hover:bg-surface hover:text-ink">
             {open ? "Hide" : "Show"} 5 criteria
-            <span className="text-muted">({5 - f.unscoredCount} scored{f.unscoredCount ? `, ${f.unscoredCount} need evidence` : ""})</span>
+            <span className="text-fg-tertiary">({5 - f.unscoredCount} scored{f.unscoredCount ? `, ${f.unscoredCount} need evidence` : ""})</span>
             <ChevronDown className={cn("size-4 transition-transform", open && "rotate-180")} aria-hidden />
           </button>
         </div>
@@ -158,7 +158,7 @@ export function RwwPanel({ p, idea, capping }: { p: RwwPillar; idea: Idea; cappi
             <NetPill net={p.net} />
           </div>
         </div>
-        <p className="mt-2 text-xs text-muted">
+        <p className="mt-2 text-xs text-fg-tertiary">
           Measures {def.fit.toLowerCase()} · Draws on {p.drawsOn.map((f) => FILTER_SHORT[f]).join(" + ")}
           {p.id === "win" ? " + your inputs" : p.id === "worthIt" ? " + Path to MRR + your budget and hours" : ""}
         </p>

@@ -56,16 +56,16 @@ export function ReorderList<T extends { id: string }>({ items, onChange, render,
               setDrag(null);
               setOver(null);
             }}
-            className="mt-1.5 hidden cursor-grab text-muted hover:text-ink sm:block"
+            className="mt-1.5 hidden cursor-grab text-fg-tertiary hover:text-ink sm:block"
             aria-hidden
           >
             <GripVertical className="size-4" />
           </span>
           <div className="min-w-0 flex-1">{render(item, i)}</div>
           <div className="flex shrink-0 flex-col items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-focus-within:opacity-100 sm:group-hover:opacity-100">
-            <button type="button" onClick={() => move(i, i - 1)} disabled={i === 0} aria-label="Move up" className="rounded p-0.5 text-muted hover:bg-surface hover:text-ink disabled:opacity-30"><ArrowUp className="size-3.5" /></button>
-            <button type="button" onClick={() => move(i, i + 1)} disabled={i === items.length - 1} aria-label="Move down" className="rounded p-0.5 text-muted hover:bg-surface hover:text-ink disabled:opacity-30"><ArrowDown className="size-3.5" /></button>
-            <button type="button" onClick={() => onChange(items.filter((_, j) => j !== i))} aria-label="Delete" className="rounded p-0.5 text-muted hover:bg-weak-tint hover:text-weak"><Trash2 className="size-3.5" /></button>
+            <button type="button" onClick={() => move(i, i - 1)} disabled={i === 0} aria-label="Move up" className="rounded p-0.5 text-fg-tertiary hover:bg-surface hover:text-ink disabled:opacity-30"><ArrowUp className="size-3.5" /></button>
+            <button type="button" onClick={() => move(i, i + 1)} disabled={i === items.length - 1} aria-label="Move down" className="rounded p-0.5 text-fg-tertiary hover:bg-surface hover:text-ink disabled:opacity-30"><ArrowDown className="size-3.5" /></button>
+            <button type="button" onClick={() => onChange(items.filter((_, j) => j !== i))} aria-label="Delete" className="rounded p-0.5 text-fg-tertiary hover:bg-weak-tint hover:text-weak"><Trash2 className="size-3.5" /></button>
           </div>
         </li>
       ))}

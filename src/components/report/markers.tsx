@@ -58,7 +58,7 @@ export function NetPill({ net, size = "md" }: { net: RwwNet; size?: "sm" | "md" 
 export function AnswerPill({ answer }: { answer: RwwAnswer | null }) {
   if (!answer)
     return (
-      <span className="inline-flex items-center gap-1 rounded border border-dashed border-line-strong px-1.5 py-0.5 text-xs font-medium text-muted [&_svg]:size-3">
+      <span className="inline-flex items-center gap-1 rounded border border-dashed border-line-strong px-1.5 py-0.5 text-xs font-medium text-fg-tertiary [&_svg]:size-3">
         <CircleHelp aria-hidden />
         Unanswered
       </span>
@@ -104,7 +104,7 @@ export function ConfidenceText({ c }: { c: Confidence }) {
 }
 
 export function SentimentTag({ s }: { s: Sentiment }) {
-  if (s === "neutral") return <span className="inline-flex items-center gap-1 text-xs text-muted">Neutral</span>;
+  if (s === "neutral") return <span className="inline-flex items-center gap-1 text-xs text-fg-tertiary">Neutral</span>;
   return s === "supports" ? (
     <span className="inline-flex items-center gap-0.5 rounded bg-strong-tint px-1.5 py-0.5 text-xs font-medium text-strong [&_svg]:size-3">
       <ArrowUpRight aria-hidden />

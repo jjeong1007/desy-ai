@@ -30,7 +30,7 @@ export function FrameworkTag({ id, className }: { id: string; className?: string
       </PopoverTrigger>
       <PopoverContent className="w-[340px] max-w-[calc(100vw-2rem)]">
         <p className="font-semibold text-ink">{kb.title}</p>
-        <p className="mt-0.5 text-xs text-muted">{kb.source}</p>
+        <p className="mt-0.5 text-xs text-fg-tertiary">{kb.source}</p>
         <p className="mt-2 text-[13px] leading-relaxed text-ink-2">{kb.explanation}</p>
         <div className="mt-3 max-h-64 space-y-3 overflow-y-auto pr-1 scrollbar-thin">
           <div>

@@ -195,9 +195,9 @@ export function IntakeForm() {
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-6 md:px-6">
       <p className="text-[13px] font-medium text-accent-strong">{editing ? "Edit inputs" : "New idea"}</p>
-      <h1 className="mt-1 text-[32px] font-semibold leading-none">{STEPS[step].title}</h1>
+      <h1 className="mt-1 text-page-title font-semibold">{STEPS[step].title}</h1>
       <p className="mt-1 text-sm text-ink-2">{STEPS[step].blurb}</p>
-      {editing ? <p className="mt-2 text-xs text-muted">Saving keeps the current report. Running the analysis replaces the findings.</p> : null}
+      {editing ? <p className="mt-2 text-xs text-fg-tertiary">Saving keeps the current report. Running the analysis replaces the findings.</p> : null}
 
       <div className="mt-5" aria-hidden>
         <div className="h-1.5 overflow-hidden rounded-full bg-surface-2">
@@ -211,7 +211,7 @@ export function IntakeForm() {
               type="button"
               onClick={() => go(i)}
               aria-current={i === step ? "step" : undefined}
-              className={cn("rounded px-2 py-1 text-xs font-medium", i === step ? "bg-accent-tint text-accent-strong" : "text-muted hover:bg-surface hover:text-ink")}
+              className={cn("rounded px-2 py-1 text-xs font-medium", i === step ? "bg-accent-tint text-accent-strong" : "text-fg-tertiary hover:bg-surface hover:text-ink")}
             >
               {i + 1}. {s.title}
             </button>
@@ -294,7 +294,7 @@ export function IntakeForm() {
             </div>
             <fieldset>
               <legend className="text-sm font-medium">How will this get built?</legend>
-              <p className="mt-1 text-xs text-muted">Required. <span className="rounded bg-surface px-1.5 py-0.5 font-medium text-ink-2">Used in: Economic filter, Win, Worth It</span></p>
+              <p className="mt-1 text-xs text-fg-tertiary">Required. <span className="rounded bg-surface px-1.5 py-0.5 font-medium text-ink-2">Used in: Economic filter, Win, Worth It</span></p>
               <div className="mt-2 grid gap-2" role="radiogroup" aria-invalid={!!errors.buildPath} aria-describedby={errors.buildPath ? "buildPath-err" : undefined}>
                 {BUILD.map((b) => (
                   <label key={b.id} className={cn("flex cursor-pointer gap-3 rounded border px-3 py-2", intake.buildPath === b.id ? "border-accent bg-accent-tint/40" : "border-line")}>
@@ -322,13 +322,13 @@ export function IntakeForm() {
                     className="w-full accent-[rgb(var(--accent-strong))]"
                   />
                   <Input id="buildBudget" inputMode="decimal" type="number" min={0} step={500} value={intake.buildBudget ?? ""} placeholder="5000" onChange={(e) => set({ buildBudget: e.target.value === "" ? null : Number(e.target.value) })} aria-invalid={!!errors.buildBudget} aria-describedby={described("buildBudget", errors)} />
-                  <p className="text-xs text-muted">{intake.buildBudget != null ? money(intake.buildBudget) : "Leave blank if you don't have a quote yet."}</p>
+                  <p className="text-xs text-fg-tertiary">{intake.buildBudget != null ? money(intake.buildBudget) : "Leave blank if you don't have a quote yet."}</p>
                 </div>
               </Field>
             ) : null}
             <fieldset>
               <legend className="text-sm font-medium">How well do you know these customers?</legend>
-              <p className="mt-1 text-xs text-muted"><span className="rounded bg-surface px-1.5 py-0.5 font-medium text-ink-2">Used in: Win</span></p>
+              <p className="mt-1 text-xs text-fg-tertiary"><span className="rounded bg-surface px-1.5 py-0.5 font-medium text-ink-2">Used in: Win</span></p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2" role="radiogroup" aria-describedby={errors.familiarity ? "familiarity-err" : undefined}>
                 {FAMILIAR.map((f) => (
                   <label key={f.id} className={cn("flex cursor-pointer items-center gap-2 rounded border px-3 py-2 text-sm", intake.familiarity === f.id ? "border-accent bg-accent-tint/40" : "border-line")}>
@@ -392,7 +392,7 @@ function Field({ id, label, hint, example, usedIn, error, children }: { id: stri
         <Label htmlFor={id}>{label}</Label>
         {usedIn ? <span className="rounded bg-surface px-1.5 py-0.5 text-[11px] font-medium text-ink-2">Used in: {usedIn}</span> : null}
       </div>
-      <p id={`${id}-hint`} className="mt-1 text-xs leading-relaxed text-muted">
+      <p id={`${id}-hint`} className="mt-1 text-xs leading-relaxed text-fg-tertiary">
         {hint}{hint && example ? " " : ""}{example ? <>Example: {example}</> : null}
       </p>
       <div className="mt-1.5">{children}</div>
@@ -420,7 +420,7 @@ function Review({ intake, onJump }: { intake: IntakeInput; onJump: (step: number
         {rows.map((r) => (
           <div key={r.label} className="flex items-start justify-between gap-3">
             <div>
-              <dt className="text-xs text-muted">{r.label}</dt>
+              <dt className="text-xs text-fg-tertiary">{r.label}</dt>
               <dd className="text-sm text-ink">{r.value || "—"}</dd>
             </div>
             <button type="button" onClick={() => onJump(r.step)} className="shrink-0 text-xs font-medium text-accent-strong hover:underline">

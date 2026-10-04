@@ -98,9 +98,9 @@ function Workspace() {
       </div>
       <header className="mt-4 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-[32px] font-semibold leading-tight">{idea.intake.name}</h1>
+          <h1 className="text-page-title font-semibold">{idea.intake.name}</h1>
           <p className="mt-2 max-w-[70ch] text-sm font-medium text-ink-2">{idea.intake.oneLiner}</p>
-          <p className="mt-1 text-xs text-muted">
+          <p className="mt-1 text-xs text-fg-tertiary">
             {idea.seed ? "Example idea with sample data · " : ""}Last run {relTime(idea.lastRunAt)}
           </p>
         </div>

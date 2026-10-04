@@ -45,8 +45,11 @@ export function IdeaSwitcher({ currentId, className }: { currentId?: string; cla
   return (
     <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
       <DialogPrimitive.Trigger asChild>
-        <button type="button" className={cn("flex min-w-0 items-center justify-between gap-3 rounded border border-line bg-canvas px-4 py-2 text-sm font-normal text-muted", className)} aria-label="Search documents">
-          <span className={cn("truncate text-left", current && "text-ink")}>{current ? current.intake.name : "Search documents..."}</span>
+        <button type="button" className={cn("flex h-[33px] min-w-0 flex-1 items-center justify-between gap-2 rounded-sm border border-line bg-canvas px-4 text-body font-normal text-fg-tertiary", className)} aria-label="Search documents">
+          <span className="flex min-w-0 items-center gap-2">
+            <Search className="size-4 shrink-0 text-fg-secondary" aria-hidden />
+            <span className={cn("truncate text-left", current && "text-fg")}>{current ? current.intake.name : "Search documents, interviews, product features, and more"}</span>
+          </span>
           <span className="hidden shrink-0 items-center gap-1 sm:flex" aria-hidden>
             <Kbd>⌘</Kbd>
             <Kbd>K</Kbd>
@@ -59,7 +62,7 @@ export function IdeaSwitcher({ currentId, className }: { currentId?: string; cla
           <DialogPrimitive.Title className="sr-only">Switch idea</DialogPrimitive.Title>
           <DialogPrimitive.Description className="sr-only">Type to filter your ideas, use the arrow keys to move, and Enter to open.</DialogPrimitive.Description>
           <div className="flex items-center gap-2 border-b border-line px-4">
-            <Search className="size-4 text-muted" aria-hidden />
+            <Search className="size-4 text-fg-tertiary" aria-hidden />
             <input
               autoFocus
               value={q}
@@ -82,11 +85,11 @@ export function IdeaSwitcher({ currentId, className }: { currentId?: string; cla
               aria-expanded
               aria-controls="idea-switch-list"
               aria-activedescendant={results[active] ? `isw-${results[active].id}` : undefined}
-              className="h-12 flex-1 bg-transparent text-sm outline-none placeholder:text-muted"
+              className="h-12 flex-1 bg-transparent text-sm outline-none placeholder:text-fg-tertiary"
             />
           </div>
           <ul id="idea-switch-list" role="listbox" className="max-h-80 overflow-y-auto p-1">
-            {results.length === 0 ? <li className="px-3 py-6 text-center text-sm text-muted">No ideas match &ldquo;{q}&rdquo;.</li> : null}
+            {results.length === 0 ? <li className="px-3 py-6 text-center text-sm text-fg-tertiary">No ideas match &ldquo;{q}&rdquo;.</li> : null}
             {results.map((i, idx) => {
               const r = reportFor(i, weights);
               return (
@@ -94,7 +97,7 @@ export function IdeaSwitcher({ currentId, className }: { currentId?: string; cla
                   <button type="button" onMouseEnter={() => setActive(idx)} onClick={() => go(i.id)} className={cn("flex w-full items-center justify-between gap-3 rounded px-3 py-2 text-left text-sm", idx === active ? "bg-surface" : "")}>
                     <span className="min-w-0">
                       <span className="block truncate font-medium text-ink">{i.intake.name || "Untitled draft"}</span>
-                      <span className="block truncate text-xs text-muted">{i.intake.oneLiner || "No description yet"}</span>
+                      <span className="block truncate text-xs text-fg-tertiary">{i.intake.oneLiner || "No description yet"}</span>
                     </span>
                     {i.status === "complete" && r ? (
                       <span className="flex shrink-0 items-center gap-2">
@@ -102,7 +105,7 @@ export function IdeaSwitcher({ currentId, className }: { currentId?: string; cla
                         <BandBadge band={r.score.band} size="sm" />
                       </span>
                     ) : (
-                      <span className="shrink-0 text-xs capitalize text-muted">{i.status}</span>
+                      <span className="shrink-0 text-xs capitalize text-fg-tertiary">{i.status}</span>
                     )}
                   </button>
                 </li>

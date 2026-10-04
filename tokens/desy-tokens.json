@@ -1,0 +1,239 @@
+{
+  "$description": "Desy design tokens v0.1, audited from Figma file 'Desy' > page 'Product v0' (85:39) on 2026-10-01. Format: W3C Design Tokens (DTCG). Layer 1 = primitives (raw values found in file). Layer 2 = semantic (what components should reference). All color values match the Figma file as-is. Values marked $extensions.desy.status = 'proposed' are not in the file (e.g. hover and pressed states, which Figma does not define).",
+
+  "primitive": {
+    "color": {
+      "orange": {
+        "50":  { "$type": "color", "$value": "#F9E2DB", "$description": "Active nav item background. 99 uses." },
+        "500": { "$type": "color", "$value": "#DF5732", "$description": "Brand color. 244 fills, 211 text, 127 strokes. 3.79:1 on white: below AA for small text." },
+        "400": { "$type": "color", "$value": "#E56A45", "$description": "Found once (Branch panel commit button).", "$extensions": { "desy": { "status": "observed-isolated" } } },
+        "600": { "$type": "color", "$value": "#C85031", "$description": "Found once (Branch panel). Used as the brand hover state, which Figma does not define.", "$extensions": { "desy": { "status": "proposed" } } },
+        "700": { "$type": "color", "$value": "#A8401F", "$description": "Brand pressed state. Not in Figma.", "$extensions": { "desy": { "status": "proposed" } } }
+      },
+      "gray": {
+        "0":    { "$type": "color", "$value": "#FFFFFF" },
+        "50":   { "$type": "color", "$value": "#F7F7F7", "$description": "7 uses. Near-duplicate of warm-50 #F7F7F6." },
+        "100":  { "$type": "color", "$value": "#F2F2F2", "$description": "Subtle surface / hovered row. 140 uses." },
+        "200":  { "$type": "color", "$value": "#E6E6E6", "$description": "Default border + divider. 679 strokes, 170 fills." },
+        "300":  { "$type": "color", "$value": "#D9D9D9", "$description": "Image placeholders. 230 uses. Note: this is Figma's default rectangle fill." },
+        "500":  { "$type": "color", "$value": "#808080", "$description": "Tertiary text. 442 text uses. 3.95:1 on white: fails AA for small text." },
+        "600":  { "$type": "color", "$value": "#606060", "$description": "10 uses (decorative rectangles)." },
+        "700":  { "$type": "color", "$value": "#525252", "$description": "Secondary text + icons. 625 text, 594 strokes." },
+        "800":  { "$type": "color", "$value": "#444444", "$description": "3 uses (Demo Prototype sections only)." },
+        "950":  { "$type": "color", "$value": "#0D0D0D", "$description": "Logo wordmark. 61 text uses." },
+        "1000": { "$type": "color", "$value": "#000000", "$description": "Primary text. 325 text, 219 strokes." }
+      },
+      "warm": {
+        "$description": "Second, warm-tinted neutral family. Used ONLY in Design Canvas frames and Branch panel component. See inconsistency #2.",
+        "50":  { "$type": "color", "$value": "#F7F7F6" },
+        "200": { "$type": "color", "$value": "#E6E6E2" },
+        "250": { "$type": "color", "$value": "#E7E2DC" },
+        "300": { "$type": "color", "$value": "#D8D8D3" },
+        "350": { "$type": "color", "$value": "#D7D0C9" },
+        "400": { "$type": "color", "$value": "#C8C3BC" },
+        "450": { "$type": "color", "$value": "#B8B2AB" },
+        "500": { "$type": "color", "$value": "#9A938D" },
+        "550": { "$type": "color", "$value": "#8B8B86" },
+        "600": { "$type": "color", "$value": "#746E68" },
+        "700": { "$type": "color", "$value": "#5D5D59" },
+        "900": { "$type": "color", "$value": "#282522" },
+        "950": { "$type": "color", "$value": "#171716" }
+      },
+      "green":  { "50": { "$type": "color", "$value": "#E6FCCF" }, "500": { "$type": "color", "$value": "#66BB0C", "$description": "'Them' speaker label. 2.42:1 on white: fails." }, "700": { "$type": "color", "$value": "#5A7F32" } },
+      "yellow": { "50": { "$type": "color", "$value": "#FCF7CF" }, "100": { "$type": "color", "$value": "#FFF0AE", "$description": "Transcript highlight." }, "700": { "$type": "color", "$value": "#7F7832" } },
+      "rust":   { "50": { "$type": "color", "$value": "#FCDCCF" }, "700": { "$type": "color", "$value": "#7F4832" } },
+      "red": { "50": { "$type": "color", "$value": "#FCCFCF" }, "700": { "$type": "color", "$value": "#7F3232" }, "$extensions": { "desy": { "status": "derived", "note": "Derived from the Figma tag colors (bg max FC/min CF, text max 7F/min 32). Added at the user's request 2026-10-02." } } },
+      "amber": { "50": { "$type": "color", "$value": "#FCE9CF" }, "700": { "$type": "color", "$value": "#7F5E32" }, "$extensions": { "desy": { "status": "derived", "note": "Derived from the Figma tag colors (bg max FC/min CF, text max 7F/min 32). Added at the user's request 2026-10-02." } } },
+      "emerald": { "50": { "$type": "color", "$value": "#CFFCDA" }, "700": { "$type": "color", "$value": "#327F45" }, "$extensions": { "desy": { "status": "derived", "note": "Derived from the Figma tag colors (bg max FC/min CF, text max 7F/min 32). Added at the user's request 2026-10-02." } } },
+      "teal": { "50": { "$type": "color", "$value": "#CFFCF3" }, "700": { "$type": "color", "$value": "#327F70" }, "$extensions": { "desy": { "status": "derived", "note": "Derived from the Figma tag colors (bg max FC/min CF, text max 7F/min 32). Added at the user's request 2026-10-02." } } },
+      "cyan": { "50": { "$type": "color", "$value": "#CFF3FC" }, "700": { "$type": "color", "$value": "#32707F" }, "$extensions": { "desy": { "status": "derived", "note": "Derived from the Figma tag colors (bg max FC/min CF, text max 7F/min 32). Added at the user's request 2026-10-02." } } },
+      "blue": { "50": { "$type": "color", "$value": "#CFE2FC" }, "700": { "$type": "color", "$value": "#32527F" }, "$extensions": { "desy": { "status": "derived", "note": "Derived from the Figma tag colors (bg max FC/min CF, text max 7F/min 32). Added at the user's request 2026-10-02." } } },
+      "indigo": { "50": { "$type": "color", "$value": "#CFD0FC" }, "700": { "$type": "color", "$value": "#32357F" }, "$extensions": { "desy": { "status": "derived", "note": "Derived from the Figma tag colors (bg max FC/min CF, text max 7F/min 32). Added at the user's request 2026-10-02." } } },
+      "violet": { "50": { "$type": "color", "$value": "#E0CFFC" }, "700": { "$type": "color", "$value": "#4E327F" }, "$extensions": { "desy": { "status": "derived", "note": "Derived from the Figma tag colors (bg max FC/min CF, text max 7F/min 32). Added at the user's request 2026-10-02." } } },
+      "purple": { "50": { "$type": "color", "$value": "#F1CFFC" }, "700": { "$type": "color", "$value": "#6C327F" }, "$extensions": { "desy": { "status": "derived", "note": "Derived from the Figma tag colors (bg max FC/min CF, text max 7F/min 32). Added at the user's request 2026-10-02." } } },
+      "pink": { "50": { "$type": "color", "$value": "#FCCFEF" }, "700": { "$type": "color", "$value": "#7F3268" }, "$extensions": { "desy": { "status": "derived", "note": "Derived from the Figma tag colors (bg max FC/min CF, text max 7F/min 32). Added at the user's request 2026-10-02." } } },
+      "rose": { "50": { "$type": "color", "$value": "#FCCFDD" }, "700": { "$type": "color", "$value": "#7F3249" }, "$extensions": { "desy": { "status": "derived", "note": "Derived from the Figma tag colors (bg max FC/min CF, text max 7F/min 32). Added at the user's request 2026-10-02." } } },
+      "avatar": {
+        "teal": { "$type": "color", "$value": "#00B8C1" },
+        "red":  { "$type": "color", "$value": "#C72222" },
+        "blue": { "$type": "color", "$value": "#0D1FDC" }
+      },
+      "git": {
+        "$description": "Source-control status colors, Branch panel only.",
+        "added":    { "$type": "color", "$value": "#39805C" },
+        "modified": { "$type": "color", "$value": "#B8781B" },
+        "deleted":  { "$type": "color", "$value": "#C64D4D" },
+        "renamed":  { "$type": "color", "$value": "#5277A8" }
+      }
+    },
+
+    "font": {
+      "family": {
+        "sans": { "$type": "fontFamily", "$value": ["Geist", "ui-sans-serif", "system-ui", "sans-serif"] },
+        "mono": { "$type": "fontFamily", "$value": ["Geist Mono", "ui-monospace", "SFMono-Regular", "monospace"], "$description": "Proposed. File uses Roboto Mono in 4 places.", "$extensions": { "desy": { "status": "proposed" } } }
+      },
+      "weight": {
+        "regular":  { "$type": "fontWeight", "$value": 400 },
+        "medium":   { "$type": "fontWeight", "$value": 500 },
+        "semibold": { "$type": "fontWeight", "$value": 600 }
+      },
+      "size": {
+        "10": { "$type": "dimension", "$value": "10px" },
+        "11": { "$type": "dimension", "$value": "11px" },
+        "12": { "$type": "dimension", "$value": "12px" },
+        "14": { "$type": "dimension", "$value": "14px" },
+        "16": { "$type": "dimension", "$value": "16px" },
+        "20": { "$type": "dimension", "$value": "20px" },
+        "32": { "$type": "dimension", "$value": "32px" }
+      },
+      "lineHeight": {
+        "$description": "Proposed. Every text layer in the file uses 'auto'.",
+        "tight":  { "$type": "number", "$value": 1.2 },
+        "snug":   { "$type": "number", "$value": 1.35 },
+        "normal": { "$type": "number", "$value": 1.5 }
+      },
+      "letterSpacing": {
+        "none": { "$type": "dimension", "$value": "0em" },
+        "wide": { "$type": "dimension", "$value": "0.04em", "$description": "Observed on 10px section labels in Design Canvas." }
+      }
+    },
+
+    "space": {
+      "0":  { "$type": "dimension", "$value": "0px" },
+      "1":  { "$type": "dimension", "$value": "2px" },
+      "2":  { "$type": "dimension", "$value": "4px",  "$description": "745 gaps, 402 paddings." },
+      "3":  { "$type": "dimension", "$value": "6px" },
+      "4":  { "$type": "dimension", "$value": "8px",  "$description": "Most common: 1222 gaps, 3648 paddings." },
+      "5":  { "$type": "dimension", "$value": "12px", "$description": "247 gaps, 988 paddings." },
+      "6":  { "$type": "dimension", "$value": "16px" },
+      "8":  { "$type": "dimension", "$value": "24px" },
+      "10": { "$type": "dimension", "$value": "32px" }
+    },
+
+    "radius": {
+      "xs":   { "$type": "dimension", "$value": "2px" },
+      "sm":   { "$type": "dimension", "$value": "4px",  "$description": "Dominant: 1089 uses (nav items, inputs, chips)." },
+      "md":   { "$type": "dimension", "$value": "6px",  "$description": "Buttons." },
+      "lg":   { "$type": "dimension", "$value": "8px",  "$description": "Cards, panels. 189 uses." },
+      "xl":   { "$type": "dimension", "$value": "12px" },
+      "full": { "$type": "dimension", "$value": "9999px" }
+    },
+
+    "borderWidth": {
+      "default": { "$type": "dimension", "$value": "1px" },
+      "thick":   { "$type": "dimension", "$value": "2px" }
+    },
+
+    "shadow": {
+      "ring":    { "$type": "shadow", "$value": { "offsetX": "0px", "offsetY": "0px", "blur": "12px", "spread": "0px", "color": "#0000001F" }, "$description": "16 uses." },
+      "card":    { "$type": "shadow", "$value": { "offsetX": "0px", "offsetY": "4px", "blur": "44px", "spread": "0px", "color": "#00000014" }, "$description": "28 uses." },
+      "popover": { "$type": "shadow", "$value": { "offsetX": "0px", "offsetY": "8px", "blur": "28px", "spread": "0px", "color": "#00000012" }, "$description": "4 uses." }
+    },
+
+    "opacity": {
+      "disabled": { "$type": "number", "$value": 0.32 }
+    },
+
+    "icon": {
+      "size":   { "sm": { "$type": "dimension", "$value": "12px" }, "md": { "$type": "dimension", "$value": "16px" } },
+      "stroke": { "$type": "dimension", "$value": "1.33px", "$description": "Lucide icons. Most common effective stroke in file (1056 uses). Proposed: lock with absoluteStrokeWidth." }
+    }
+  },
+
+  "semantic": {
+    "color": {
+      "bg": {
+        "canvas":       { "$type": "color", "$value": "{primitive.color.gray.0}" },
+        "subtle":       { "$type": "color", "$value": "{primitive.color.gray.100}" },
+        "placeholder":  { "$type": "color", "$value": "{primitive.color.gray.300}" },
+        "brand":       { "$type": "color", "$value": "{primitive.color.orange.500}" },
+        "brand-hover": { "$type": "color", "$value": "{primitive.color.orange.600}", "$extensions": { "desy": { "status": "proposed", "note": "Figma has no hover state." } } },
+        "brand-active": { "$type": "color", "$value": "{primitive.color.orange.700}", "$extensions": { "desy": { "status": "proposed" } } },
+        "brand-subtle":{ "$type": "color", "$value": "{primitive.color.orange.50}" },
+        "highlight":    { "$type": "color", "$value": "{primitive.color.yellow.100}" }
+      },
+      "text": {
+        "primary":   { "$type": "color", "$value": "{primitive.color.gray.1000}" },
+        "secondary": { "$type": "color", "$value": "{primitive.color.gray.700}" },
+        "tertiary":  { "$type": "color", "$value": "{primitive.color.gray.500}" },
+        "on-brand": { "$type": "color", "$value": "{primitive.color.gray.0}" },
+        "brand":    { "$type": "color", "$value": "{primitive.color.orange.500}" }
+      },
+      "border": {
+        "default": { "$type": "color", "$value": "{primitive.color.gray.200}" },
+        "strong":  { "$type": "color", "$value": "{primitive.color.gray.700}" },
+        "brand":  { "$type": "color", "$value": "{primitive.color.orange.500}" }
+      },
+      "icon": {
+        "default": { "$type": "color", "$value": "{primitive.color.gray.700}" },
+        "muted":   { "$type": "color", "$value": "{primitive.color.gray.500}" },
+        "brand":  { "$type": "color", "$value": "{primitive.color.orange.500}" }
+      },
+      "tag": {
+        "positive":  { "bg": { "$type": "color", "$value": "{primitive.color.green.50}" },  "fg": { "$type": "color", "$value": "{primitive.color.green.700}" } },
+        "confusion": { "bg": { "$type": "color", "$value": "{primitive.color.yellow.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.yellow.700}" } },
+        "frustration": { "bg": { "$type": "color", "$value": "{primitive.color.rust.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.rust.700}" } },
+        "red": { "bg": { "$type": "color", "$value": "{primitive.color.red.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.red.700}" } },
+        "rust": { "bg": { "$type": "color", "$value": "{primitive.color.rust.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.rust.700}" } },
+        "amber": { "bg": { "$type": "color", "$value": "{primitive.color.amber.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.amber.700}" } },
+        "yellow": { "bg": { "$type": "color", "$value": "{primitive.color.yellow.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.yellow.700}" } },
+        "green": { "bg": { "$type": "color", "$value": "{primitive.color.green.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.green.700}" } },
+        "emerald": { "bg": { "$type": "color", "$value": "{primitive.color.emerald.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.emerald.700}" } },
+        "teal": { "bg": { "$type": "color", "$value": "{primitive.color.teal.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.teal.700}" } },
+        "cyan": { "bg": { "$type": "color", "$value": "{primitive.color.cyan.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.cyan.700}" } },
+        "blue": { "bg": { "$type": "color", "$value": "{primitive.color.blue.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.blue.700}" } },
+        "indigo": { "bg": { "$type": "color", "$value": "{primitive.color.indigo.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.indigo.700}" } },
+        "violet": { "bg": { "$type": "color", "$value": "{primitive.color.violet.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.violet.700}" } },
+        "purple": { "bg": { "$type": "color", "$value": "{primitive.color.purple.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.purple.700}" } },
+        "pink": { "bg": { "$type": "color", "$value": "{primitive.color.pink.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.pink.700}" } },
+        "rose": { "bg": { "$type": "color", "$value": "{primitive.color.rose.50}" }, "fg": { "$type": "color", "$value": "{primitive.color.rose.700}" } }
+      },
+      "speaker": {
+        "self":  { "$type": "color", "$value": "{primitive.color.orange.500}" },
+        "other": { "$type": "color", "$value": "{primitive.color.green.500}" }
+      },
+      "panel": {
+        "$description": "Canvas panels: Layers (201:4943), Configuration (201:5139).",
+        "line":           { "$type": "color", "$value": "{primitive.color.warm.200}" },
+        "field":          { "$type": "color", "$value": "{primitive.color.warm.50}" },
+        "fg":             { "$type": "color", "$value": "{primitive.color.warm.950}" },
+        "fg-secondary":   { "$type": "color", "$value": "{primitive.color.warm.700}" },
+        "fg-tertiary":    { "$type": "color", "$value": "{primitive.color.warm.550}" }
+      },
+      "scm": {
+        "$description": "Source control: Branch panel (210:1529).",
+        "line":           { "$type": "color", "$value": "{primitive.color.warm.250}" },
+        "fg":             { "$type": "color", "$value": "{primitive.color.warm.900}" },
+        "fg-secondary":   { "$type": "color", "$value": "{primitive.color.warm.600}" },
+        "fg-tertiary":    { "$type": "color", "$value": "{primitive.color.warm.500}" }
+      }
+    },
+
+    "typography": {
+      "page-title":    { "$type": "typography", "$value": { "fontFamily": "{primitive.font.family.sans}", "fontWeight": 600, "fontSize": "32px", "lineHeight": 1.2, "letterSpacing": "0em" }, "$description": "File splits 32px between Medium (36) and SemiBold (25)." },
+      "heading":       { "$type": "typography", "$value": { "fontFamily": "{primitive.font.family.sans}", "fontWeight": 500, "fontSize": "20px", "lineHeight": 1.2, "letterSpacing": "0em" } },
+      "title":         { "$type": "typography", "$value": { "fontFamily": "{primitive.font.family.sans}", "fontWeight": 600, "fontSize": "16px", "lineHeight": 1.35, "letterSpacing": "0em" }, "$description": "Card titles. File splits 16px between Medium (80) and SemiBold (60)." },
+      "body":          { "$type": "typography", "$value": { "fontFamily": "{primitive.font.family.sans}", "fontWeight": 400, "fontSize": "14px", "lineHeight": 1.5,  "letterSpacing": "0em" } },
+      "body-strong":   { "$type": "typography", "$value": { "fontFamily": "{primitive.font.family.sans}", "fontWeight": 500, "fontSize": "14px", "lineHeight": 1.5,  "letterSpacing": "0em" }, "$description": "Most-used style in file (760). Nav, buttons, labels." },
+      "small":         { "$type": "typography", "$value": { "fontFamily": "{primitive.font.family.sans}", "fontWeight": 400, "fontSize": "12px", "lineHeight": 1.5,  "letterSpacing": "0em" } },
+      "small-strong":  { "$type": "typography", "$value": { "fontFamily": "{primitive.font.family.sans}", "fontWeight": 500, "fontSize": "12px", "lineHeight": 1.5,  "letterSpacing": "0em" } },
+      "panel":         { "$type": "typography", "$value": { "fontFamily": "{primitive.font.family.sans}", "fontWeight": 400, "fontSize": "11px", "lineHeight": 1.35, "letterSpacing": "0em" }, "$description": "Dense inspector panels (Design Canvas)." },
+      "caption":       { "$type": "typography", "$value": { "fontFamily": "{primitive.font.family.sans}", "fontWeight": 500, "fontSize": "10px", "lineHeight": 1.35, "letterSpacing": "0em" }, "$description": "Timestamps, meta." },
+      "label":         { "$type": "typography", "$value": { "fontFamily": "{primitive.font.family.sans}", "fontWeight": 600, "fontSize": "10px", "lineHeight": 1.35, "letterSpacing": "0.04em" }, "$description": "Section labels in panels." },
+      "code":          { "$type": "typography", "$value": { "fontFamily": "{primitive.font.family.mono}", "fontWeight": 400, "fontSize": "10px", "lineHeight": 1.5,  "letterSpacing": "0em" } }
+    },
+
+    "component": {
+      "button": {
+        "lg": { "height": { "$type": "dimension", "$value": "41px" }, "paddingX": { "$type": "dimension", "$value": "{primitive.space.6}" }, "paddingY": { "$type": "dimension", "$value": "{primitive.space.5}" }, "radius": { "$type": "dimension", "$value": "{primitive.radius.md}" } },
+        "md": { "height": { "$type": "dimension", "$value": "33px" }, "paddingX": { "$type": "dimension", "$value": "{primitive.space.5}" }, "paddingY": { "$type": "dimension", "$value": "{primitive.space.4}" }, "radius": { "$type": "dimension", "$value": "{primitive.radius.md}" } },
+        "sm": { "height": { "$type": "dimension", "$value": "25px" }, "paddingX": { "$type": "dimension", "$value": "{primitive.space.4}" }, "paddingY": { "$type": "dimension", "$value": "{primitive.space.2}" }, "radius": { "$type": "dimension", "$value": "{primitive.radius.md}" } },
+        "gap": { "$type": "dimension", "$value": "{primitive.space.4}", "$description": "File uses 10px (Figma default)." }
+      },
+      "layout": {
+        "sidebar-width": { "$type": "dimension", "$value": "262px" },
+        "topnav-height": { "$type": "dimension", "$value": "66px" }
+      }
+    }
+  }
+}

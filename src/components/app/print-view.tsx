@@ -35,7 +35,7 @@ export function PrintView() {
         <Button asChild size="sm" variant="ghost"><Link href={`/app/ideas/${idea.id}?tab=${doc === "plan" ? "planner" : "overview"}`}>Back to idea</Link></Button>
         <Button size="sm" variant="primary" onClick={() => window.print()}><Printer /> Print</Button>
       </div>
-      <p className="text-xs text-muted">Desy · {doc === "plan" ? "Research plan" : "De-risking report"}</p>
+      <p className="text-xs text-fg-tertiary">Desy · {doc === "plan" ? "Research plan" : "De-risking report"}</p>
       <h1 className="mt-1 text-3xl font-semibold tracking-tight">{idea.intake.name}</h1>
       <p className="mt-1 text-sm text-ink-2">{idea.intake.oneLiner}</p>
       {doc === "plan" ? <PlanPrint idea={idea} /> : report ? <ReportPrint idea={idea} report={report} /> : <p className="mt-6 text-sm text-ink-2">This idea doesn&apos;t have a report yet.</p>}
@@ -151,7 +151,7 @@ function PlanPrint({ idea }: { idea: Idea }) {
                 <li key={o.id}>
                   <p className="font-medium">{o.objection}</p>
                   <p className="text-ink-2">{o.response}</p>
-                  <p className="text-xs text-muted">From: {o.source}</p>
+                  <p className="text-xs text-fg-tertiary">From: {o.source}</p>
                 </li>
               ))}
             </ul>

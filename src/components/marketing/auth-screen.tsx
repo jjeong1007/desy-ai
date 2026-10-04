@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Logo } from "@/components/logo";
+import { MarketingShell } from "@/components/marketing/site-chrome";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/field";
 import { getSettings, signIn } from "@/services/account";
@@ -50,11 +50,11 @@ export function AuthScreen({ mode }: { mode: "sign-in" | "sign-up" }) {
   };
 
   return (
-    <main id="main" className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
-      <Logo />
-      <div className="mt-8 w-full max-w-sm">
-        <h1 className="text-[32px] font-semibold leading-none">{signUp ? "Create your account" : "Sign in"}</h1>
-        <p className="mt-1 text-sm text-ink-2">{signUp ? "Any details work. Nothing is sent to a server." : "Demo sign-in. Any email and password will do."}</p>
+    <MarketingShell>
+      <div className="flex flex-col items-center justify-center px-6 py-24">
+      <div className="w-full max-w-[420px] rounded-lg border border-line bg-canvas p-6 shadow-card">
+        <h1 className="m-0 text-page-title font-medium text-fg">{signUp ? "Create your account" : "Sign in"}</h1>
+        <p className="mt-2 text-body text-fg-secondary">{signUp ? "Any details work. Nothing is sent to a server." : "Demo sign-in. Any email and password will do."}</p>
         <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
           {signUp ? (
             <div>
@@ -66,12 +66,12 @@ export function AuthScreen({ mode }: { mode: "sign-in" | "sign-up" }) {
           <div>
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={!!errors.email} aria-describedby={errors.email ? "email-err" : "email-hint"} className="mt-1.5" />
-            {errors.email ? <p id="email-err" className="mt-1 text-xs text-weak">{errors.email}</p> : <p id="email-hint" className="mt-1 text-xs text-muted">Used only as your display name on this device.</p>}
+            {errors.email ? <p id="email-err" className="mt-1 text-xs text-weak">{errors.email}</p> : <p id="email-hint" className="mt-1 text-xs text-fg-tertiary">Used only as your display name on this device.</p>}
           </div>
           <div>
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" autoComplete={signUp ? "new-password" : "current-password"} value={password} onChange={(e) => setPassword(e.target.value)} aria-invalid={!!errors.password} aria-describedby={errors.password ? "pw-err" : "pw-hint"} className="mt-1.5" />
-            {errors.password ? <p id="pw-err" className="mt-1 text-xs text-weak">{errors.password}</p> : <p id="pw-hint" className="mt-1 text-xs text-muted">Not stored. Any value is accepted.</p>}
+            {errors.password ? <p id="pw-err" className="mt-1 text-xs text-weak">{errors.password}</p> : <p id="pw-hint" className="mt-1 text-xs text-fg-tertiary">Not stored. Any value is accepted.</p>}
           </div>
           <Button type="submit" variant="primary" className="w-full" disabled={busy}>
             {busy ? "Signing in…" : signUp ? "Create account" : "Sign in"}
@@ -89,6 +89,7 @@ export function AuthScreen({ mode }: { mode: "sign-in" | "sign-up" }) {
           )}
         </p>
       </div>
-    </main>
+      </div>
+    </MarketingShell>
   );
 }

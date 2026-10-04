@@ -10,6 +10,7 @@ import { Input, Label, Select, Switch } from "@/components/ui/field";
 import { ConfirmDialog } from "@/components/ui/overlay";
 import { Segmented } from "@/components/ui/tabs";
 import { reportFor, useWeights } from "@/lib/hooks";
+import { applyTheme } from "@/components/theme-toggle";
 import { saveSettings } from "@/services/account";
 import { resetDemoData, updateIdea } from "@/services/ideas";
 import { computeReport, weightsValid } from "@/services/scoring";
@@ -123,7 +124,7 @@ export function SettingsPage() {
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-6 md:px-6">
-      <h1 className="text-[32px] font-semibold leading-none">Settings</h1>
+      <h1 className="text-page-title font-semibold">Settings</h1>
       <p className="mt-1 text-sm text-ink-2">Profile, theme, and the weights behind every Desy Score. Weights are a Desy assumption. The course framework does not specify them.</p>
 
       <section className="mt-8" aria-labelledby="profile-h">
@@ -150,7 +151,11 @@ export function SettingsPage() {
           <Segmented
             label="Color theme"
             value={form.theme}
-            onChange={(theme) => patch({ theme })}
+            onChange={async (theme) => {
+              patch({ theme });
+              applyTheme(theme);
+              setSettings(await saveSettings({ theme }));
+            }}
             options={[
               { id: "light", label: "Light" },
               { id: "dark", label: "Dark" },

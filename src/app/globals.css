@@ -2,50 +2,126 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Tokens copied from the Desy Figma file, Product v0. Fills, type, and
-   borders use the file's hex values: white canvas, #df5732 accent, #e6e6e6
-   hairlines, #d9d9d9 wells. */
+/* Semantic tokens from desydemo theme.css / tokens/desy-tokens.json.
+   RGB triplets so Tailwind can apply alpha. Older names (ink, accent, surface)
+   alias the same values so existing screens use the system. */
 :root {
-  --canvas: 255 255 255;        /* #ffffff */
-  --surface: 250 250 250;       /* faint hover wash */
-  --surface-2: 242 242 242;     /* #f2f2f2 */
-  --well: 217 217 217;          /* #d9d9d9 placeholder wells */
-  --line: 230 230 230;          /* #e6e6e6 */
-  --line-strong: 230 230 230;   /* #e6e6e6 */
-  --ink: 0 0 0;                 /* #000000 */
-  --ink-2: 82 82 82;            /* #525252 */
-  --muted: 128 128 128;         /* #808080 */
-  --accent: 223 87 50;          /* #df5732 */
-  --accent-strong: 223 87 50;   /* #df5732, same fill and accent text */
-  --accent-tint: 249 226 219;   /* #f9e2db */
+  --canvas: 255 255 255;
+  --subtle: 242 242 242;
+  --muted: 247 247 247;
+  --placeholder: 217 217 217;
+  --highlight: 255 240 174;
+  --brand: 223 87 50;
+  --brand-hover: 200 80 49;
+  --brand-active: 168 64 31;
+  --brand-subtle: 249 226 219;
+  --on-brand: 255 255 255;
+  --fg: 0 0 0;
+  --fg-secondary: 82 82 82;
+  --fg-tertiary: 128 128 128;
+  --fg-brand: 223 87 50;
+  --line: 230 230 230;
+  --line-strong: 82 82 82;
+  --focus: 223 87 50;
+  --positive: 90 127 50;
+  --positive-subtle: 230 252 207;
+  --confusion: 127 120 50;
+  --confusion-subtle: 252 247 207;
+  --frustration: 127 72 50;
+  --frustration-subtle: 252 220 207;
+  --speaker-self: 223 87 50;
+  --speaker-other: 102 187 12;
+  --panel-line: 230 230 226;
+  --panel-field: 247 247 246;
+  --panel-fg: 23 23 22;
+  --panel-fg-secondary: 93 93 89;
+  --panel-fg-tertiary: 139 139 134;
+  --scm-line: 231 226 220;
+  --scm-fg: 40 37 34;
+  --scm-fg-secondary: 116 110 104;
+  --scm-fg-tertiary: 154 147 141;
+  --git-added: 57 128 92;
+  --git-modified: 184 120 27;
+  --git-deleted: 198 77 77;
+  --git-renamed: 82 119 168;
+  --tag-red: 127 50 50;
+  --tag-red-subtle: 252 207 207;
+  --tag-rust: 127 72 50;
+  --tag-rust-subtle: 252 220 207;
+  --tag-amber: 127 94 50;
+  --tag-amber-subtle: 252 233 207;
+  --tag-yellow: 127 120 50;
+  --tag-yellow-subtle: 252 247 207;
+  --tag-green: 90 127 50;
+  --tag-green-subtle: 230 252 207;
+  --tag-emerald: 50 127 69;
+  --tag-emerald-subtle: 207 252 218;
+  --tag-teal: 50 127 112;
+  --tag-teal-subtle: 207 252 243;
+  --tag-cyan: 50 112 127;
+  --tag-cyan-subtle: 207 243 252;
+  --tag-blue: 50 82 127;
+  --tag-blue-subtle: 207 226 252;
+  --tag-indigo: 50 53 127;
+  --tag-indigo-subtle: 207 208 252;
+  --tag-violet: 78 50 127;
+  --tag-violet-subtle: 224 207 252;
+  --tag-purple: 108 50 127;
+  --tag-purple-subtle: 241 207 252;
+  --tag-pink: 127 50 104;
+  --tag-pink-subtle: 252 207 239;
+  --tag-rose: 127 50 73;
+  --tag-rose-subtle: 252 207 221;
+  /* Aliases used by screens written before this token set. */
+  --surface: 242 242 242;
+  --surface-2: 242 242 242;
+  --well: 217 217 217;
+  --ink: 0 0 0;
+  --ink-2: 82 82 82;
+  --accent: 223 87 50;
+  --accent-strong: 223 87 50;
+  --accent-tint: 249 226 219;
   --accent-fg: 255 255 255;
-  --strong: 56 102 22;          /* green text, from Figma #5a7f32 */
-  --strong-tint: 230 252 207;   /* #e6fccf */
-  --promising: 138 86 0;
-  --promising-tint: 253 240 205;
-  --weak: 168 31 31;
-  --weak-tint: 253 228 228;
-  --lowconf: 52 79 107;
-  --lowconf-tint: 232 239 246;
-  --capped: 23 23 22;
+  --strong: 90 127 50;
+  --strong-tint: 230 252 207;
+  --promising: 127 120 50;
+  --promising-tint: 252 247 207;
+  --weak: 127 72 50;
+  --weak-tint: 252 220 207;
+  --lowconf: 50 82 127;
+  --lowconf-tint: 207 226 252;
+  --capped: 0 0 0;
   --capped-tint: 242 242 242;
   color-scheme: light;
 }
 
 .dark {
   --canvas: 18 18 17;
-  --surface: 27 27 26;
+  --subtle: 36 36 34;
+  --muted: 27 27 26;
+  --placeholder: 48 48 46;
+  --highlight: 56 42 12;
+  --brand: 223 87 50;
+  --brand-hover: 230 110 74;
+  --brand-active: 240 124 90;
+  --brand-subtle: 64 32 23;
+  --on-brand: 255 255 255;
+  --fg: 240 240 236;
+  --fg-secondary: 190 190 184;
+  --fg-tertiary: 150 150 144;
+  --fg-brand: 236 110 74;
+  --line: 48 48 46;
+  --line-strong: 190 190 184;
+  --focus: 236 110 74;
+  --surface: 36 36 34;
   --surface-2: 36 36 34;
   --well: 48 48 46;
-  --line: 48 48 46;
-  --line-strong: 66 66 63;
   --ink: 240 240 236;
   --ink-2: 190 190 184;
-  --muted: 150 150 144;
   --accent: 236 110 74;
   --accent-strong: 240 124 90;
   --accent-tint: 64 32 23;
-  --accent-fg: 20 10 6;
+  --accent-fg: 255 255 255;
   --strong: 158 214 104;
   --strong-tint: 30 48 18;
   --promising: 236 190 92;
@@ -62,7 +138,8 @@
 @layer base {
   html { -webkit-text-size-adjust: 100%; }
   body {
-    @apply bg-canvas text-ink font-sans antialiased;
+    @apply bg-canvas font-sans antialiased;
+    color: rgb(var(--fg));
     font-feature-settings: "ss01";
   }
   ::selection { background: rgb(var(--accent-tint)); color: rgb(var(--ink)); }
@@ -76,6 +153,13 @@
   .hatch {
     background-image: repeating-linear-gradient(135deg, rgb(var(--line-strong) / .55) 0 2px, transparent 2px 6px);
   }
+}
+
+html { scroll-behavior: smooth; }
+
+@keyframes grow {
+  from { width: 0; }
+  to { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

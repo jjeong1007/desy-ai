@@ -2,12 +2,8 @@
 import { useEffect } from "react";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/overlay";
+import { applyTheme } from "@/components/theme-toggle";
 import { useDesy } from "@/store/desy";
-
-function applyTheme(theme: "light" | "dark" | "system") {
-  const dark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  document.documentElement.classList.toggle("dark", dark);
-}
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const hydrate = useDesy((s) => s.hydrate);

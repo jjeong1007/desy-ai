@@ -61,7 +61,7 @@ export function PathToMrr({ idea, report }: { idea: Idea; report: Report }) {
           <div>
             <label htmlFor="ptm-price" className="text-sm font-medium">Monthly price per customer</label>
             <div className="mt-1.5 flex items-center gap-2">
-              <span className="text-sm text-muted">$</span>
+              <span className="text-sm text-fg-tertiary">$</span>
               <Input id="ptm-price" type="number" inputMode="decimal" min={1} step={1} value={price} aria-invalid={priceErr} aria-describedby={priceErr ? "ptm-price-err" : undefined} onChange={(e) => { setPrice(e.target.value); apply(Number(e.target.value), Number(goal)); }} className="tnum w-28" />
               <input type="range" min={1} max={200} value={Math.min(200, Number(price) || 1)} onChange={(e) => { setPrice(e.target.value); apply(Number(e.target.value), Number(goal)); }} className="flex-1 accent-[rgb(var(--accent))]" aria-label="Price slider" />
             </div>
@@ -70,9 +70,9 @@ export function PathToMrr({ idea, report }: { idea: Idea; report: Report }) {
           <div>
             <label htmlFor="ptm-goal" className="text-sm font-medium">MRR goal</label>
             <div className="mt-1.5 flex items-center gap-2">
-              <span className="text-sm text-muted">$</span>
+              <span className="text-sm text-fg-tertiary">$</span>
               <Input id="ptm-goal" type="number" inputMode="numeric" min={100} step={500} value={goal} aria-invalid={goalErr} onChange={(e) => { setGoal(e.target.value); apply(Number(price), Number(e.target.value)); }} className="tnum w-28" />
-              <span className="text-xs text-muted">/month</span>
+              <span className="text-xs text-fg-tertiary">/month</span>
             </div>
             <div className="mt-2 flex flex-wrap gap-1">
               {[3000, 5000, 10000].map((g) => (
@@ -82,7 +82,7 @@ export function PathToMrr({ idea, report }: { idea: Idea; report: Report }) {
               ))}
             </div>
           </div>
-          <p className="text-xs text-muted">Changes save automatically and recalculate the whole report.</p>
+          <p className="text-xs text-fg-tertiary">Changes save automatically and recalculate the whole report.</p>
         </div>
         <div className="min-w-0">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -105,11 +105,11 @@ export function PathToMrr({ idea, report }: { idea: Idea; report: Report }) {
           ) : null}
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
             <div className="rounded border border-line p-3">
-              <p className="text-xs text-muted">Feeds Customer → Sizable customer base</p>
+              <p className="text-xs text-fg-tertiary">Feeds Customer → Sizable customer base</p>
               <div className="mt-1.5"><CriterionDots score={sizable.score} /></div>
             </div>
             <div className="rounded border border-line p-3">
-              <p className="text-xs text-muted">Feeds Worth It → Will it make money?</p>
+              <p className="text-xs text-fg-tertiary">Feeds Worth It → Will it make money?</p>
               <div className="mt-1.5"><AnswerPill answer={money_.answer} /></div>
             </div>
           </div>
@@ -136,13 +136,13 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: "go
 
 export function ChannelList({ idea }: { idea: Idea }) {
   const channels = [...(idea.analysis?.channels ?? [])].sort((a, b) => b.fit - a.fit);
-  if (!channels.length) return <p className="text-sm text-muted">No channels found yet. Add distribution ideas to your intake and re-run.</p>;
+  if (!channels.length) return <p className="text-sm text-fg-tertiary">No channels found yet. Add distribution ideas to your intake and re-run.</p>;
   return (
     <div className="rounded-lg border border-line bg-canvas">
       <ol className="divide-y divide-line">
         {channels.map((c, i) => (
           <li key={c.id} className="grid gap-2 p-4 sm:grid-cols-[28px_minmax(0,1fr)_180px] sm:items-start sm:gap-4">
-            <span className="tnum text-sm font-medium text-muted">{i + 1}</span>
+            <span className="tnum text-sm font-medium text-fg-tertiary">{i + 1}</span>
             <div className="min-w-0">
               <p className="text-sm font-medium text-ink">{c.name}</p>
               <p className="mt-0.5 text-[13px] leading-relaxed text-ink-2">{c.reason}</p>
@@ -201,7 +201,7 @@ export function Recommendations({ idea, report }: { idea: Idea; report: Report }
               </p>
             </li>
           ))}
-          {steps.length === 0 ? <li className="text-sm text-muted">No urgent gaps. Pick a channel test and start talking to customers.</li> : null}
+          {steps.length === 0 ? <li className="text-sm text-fg-tertiary">No urgent gaps. Pick a channel test and start talking to customers.</li> : null}
         </ol>
       </div>
 
@@ -218,7 +218,7 @@ export function Recommendations({ idea, report }: { idea: Idea; report: Report }
               <table className="mt-3 w-full text-xs">
                 <caption className="sr-only">Predicted filter profile compared to the current idea</caption>
                 <thead>
-                  <tr className="text-muted">
+                  <tr className="text-fg-tertiary">
                     <th scope="col" className="pb-1 text-left font-normal">Filter</th>
                     <th scope="col" className="pb-1 text-right font-normal">Now</th>
                     <th scope="col" className="pb-1 text-right font-normal">Predicted</th>
@@ -272,7 +272,7 @@ export function Recommendations({ idea, report }: { idea: Idea; report: Report }
                   </span>
                   <span className="mt-0.5 block text-[13px] text-ink-2">{a.why}</span>
                 </span>
-                <ArrowUpRight className="mt-0.5 size-4 shrink-0 text-muted" aria-label="Open in Research Planner" />
+                <ArrowUpRight className="mt-0.5 size-4 shrink-0 text-fg-tertiary" aria-label="Open in Research Planner" />
               </Link>
             </li>
           ))}
