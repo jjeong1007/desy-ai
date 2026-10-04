@@ -162,6 +162,37 @@ html { scroll-behavior: smooth; }
   to { width: 100%; }
 }
 
+.step-progress {
+  width: 0;
+  animation: grow linear forwards;
+}
+
+@keyframes workflow-demo-leave {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes workflow-demo-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.workflow-demo-leave {
+  animation: workflow-demo-leave var(--workflow-demo-fade-out, 450ms) ease-in forwards;
+}
+
+.workflow-demo-enter {
+  animation: workflow-demo-enter var(--workflow-demo-fade-in, 450ms) ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 }

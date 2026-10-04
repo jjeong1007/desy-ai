@@ -1,5 +1,5 @@
 "use client";
-import { ClipboardList, Gauge, Menu, MessagesSquare, Search, X } from "lucide-react";
+import { ClipboardList, Gauge, Menu, MessagesSquare, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "@/components/logo";
@@ -14,7 +14,6 @@ const product: NavMenuItem[] = [
   { icon: <Gauge />, title: "Idea de-risking", description: "A score, five filters, and a pursuit band", href: "/#scoring" },
   { icon: <MessagesSquare />, title: "Data sources", description: "The findings behind every criterion", href: "/#sources" },
   { icon: <ClipboardList />, title: "Research planner", description: "A discovery script for the weakest evidence", href: "/#planner" },
-  { icon: <Search />, title: "Sample report", description: "Invoice reminders for freelance designers", href: "/#sample" },
 ];
 
 const linkClass = "flex h-[33px] items-center rounded-sm text-body font-medium text-fg no-underline transition-colors hover:text-fg-secondary";
@@ -92,7 +91,6 @@ const footerLinks: Record<string, { label: string; href: string }[]> = {
     { label: "How it works", href: "/#how" },
     { label: "Scoring", href: "/#scoring" },
     { label: "Sources", href: "/#sources" },
-    { label: "Sample report", href: "/#sample" },
     { label: "Pricing", href: "/pricing" },
   ],
   Account: [

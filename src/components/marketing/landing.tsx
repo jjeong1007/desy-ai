@@ -1,20 +1,18 @@
 "use client";
 import { ClipboardList, FileText, Home, MessageCircle, Search, Settings } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { SCORING_CONFIG } from "@/config/scoring";
 import { MarketingShell } from "@/components/marketing/site-chrome";
-import { CitedFindingVisual, IdeaScoreVisual } from "@/components/marketing/scoring-visuals";
+import { ActionPlanVisual, CitedFindingVisual, IdeaScoreVisual } from "@/components/marketing/scoring-visuals";
 import { Container, DemoFrame, FeatureRow, Reveal, SectionHeader, useInView } from "@/components/marketing/layout";
 import { Accordion } from "@/components/marketing/parts";
 import { HeroDots } from "@/components/marketing/hero-dots";
 import { PricingBlock } from "@/components/marketing/pricing-block";
-import { FilterCard } from "@/components/report/sections";
 import { ScoreHeader } from "@/components/report/score-header";
 import { SentimentTag } from "@/components/report/markers";
 import { SourceLabel } from "@/components/sources/data-sources";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/overlay";
 import { Avatar } from "@/components/ui/avatar";
 import { NavItem, NavSection, Sidebar, TeamSwitcher } from "@/components/ui/navigation";
 import { Logo } from "@/components/logo";
@@ -59,19 +57,37 @@ const steps = [
 ];
 
 const STEP_MS = 7000;
+const DEMO_FADE_OUT_MS = 450;
+const DEMO_PAUSE_MS = 180;
+const DEMO_FADE_IN_MS = 450;
 
-function SampleBody({ idPrefix, onFilter }: { idPrefix: string; onFilter?: (id: string) => void }) {
-  return (
-    <div className="flex flex-col gap-4 bg-canvas p-4 md:p-6">
-      <ScoreHeader report={SAMPLE_REPORT} compact headingId={`${idPrefix}score`} onFilter={onFilter} />
-      <div className="grid gap-3">
-        {SAMPLE_REPORT.filters.map((f) => (
-          <FilterCard key={f.id} f={f} idea={SAMPLE_IDEA} idPrefix={idPrefix} />
-        ))}
-      </div>
-      <p className="m-0 text-small text-fg-tertiary">Sample idea: {SAMPLE_IDEA.intake.name}. Evidence is simulated and stored with the app.</p>
-    </div>
-  );
+type DemoTransition = { phase: "out" | "pause" | "in"; from: number; to: number };
+
+function workflowDemoClass(i: number, active: number, transition: DemoTransition | null, intro: boolean) {
+  if (intro) {
+    if (i === active) return "workflow-demo-enter z-10";
+    return "pointer-events-none z-0 opacity-0";
+  }
+  if (transition) {
+    if (transition.phase === "out") {
+      if (i === transition.from) return "workflow-demo-leave pointer-events-none z-10";
+      return "pointer-events-none z-0 opacity-0";
+    }
+    if (transition.phase === "pause") return "pointer-events-none z-0 opacity-0";
+    if (transition.phase === "in") {
+      if (i === transition.to) return "workflow-demo-enter z-10";
+      return "pointer-events-none z-0 opacity-0";
+    }
+  }
+  return cn("z-10", i === active ? "opacity-100" : "pointer-events-none opacity-0");
+}
+
+function workflowDemoVisible(i: number, active: number, transition: DemoTransition | null, intro: boolean) {
+  if (intro) return i === active;
+  if (!transition) return i === active;
+  if (transition.phase === "out") return i === transition.from;
+  if (transition.phase === "in") return i === transition.to;
+  return false;
 }
 
 function AppPreview() {
@@ -100,7 +116,6 @@ function AppPreview() {
               <NavItem href="#top" icon={<Home />} active>Home</NavItem>
             </NavSection>
             <NavSection label="Ideas">
-              <NavItem href="#sample" icon={<FileText />}>Invoice reminders</NavItem>
               <NavItem href="#scoring" icon={<ClipboardList />}>How scoring works</NavItem>
             </NavSection>
           </Sidebar>
@@ -117,21 +132,54 @@ function AppPreview() {
 function Workflow() {
   const [ref, inView] = useInView<HTMLDivElement>(0.4);
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const prevActive = useRef(0);
+  const [intro, setIntro] = useState(true);
+  const [transition, setTransition] = useState<DemoTransition | null>(null);
   const findings = (SAMPLE_IDEA.analysis?.findings ?? []).slice(0, 3);
 
   useEffect(() => {
-    if (!inView || paused) return;
+    const t = setTimeout(() => setIntro(false), DEMO_FADE_IN_MS);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const prev = prevActive.current;
+    if (prev === active) return;
+
+    const from = prev;
+    const to = active;
+    prevActive.current = active;
+    setIntro(false);
+
+    setTransition({ phase: "out", from, to });
+
+    const pauseAt = DEMO_FADE_OUT_MS;
+    const enterAt = DEMO_FADE_OUT_MS + DEMO_PAUSE_MS;
+    const doneAt = enterAt + DEMO_FADE_IN_MS;
+
+    const tPause = setTimeout(() => setTransition({ phase: "pause", from, to }), pauseAt);
+    const tEnter = setTimeout(() => setTransition({ phase: "in", from, to }), enterAt);
+    const tDone = setTimeout(() => setTransition(null), doneAt);
+
+    return () => {
+      clearTimeout(tPause);
+      clearTimeout(tEnter);
+      clearTimeout(tDone);
+    };
+  }, [active]);
+
+  useEffect(() => {
+    if (!inView) return;
     const t = setTimeout(() => setActive((a) => (a + 1) % steps.length), STEP_MS);
     return () => clearTimeout(t);
-  }, [inView, paused, active]);
+  }, [inView, active]);
 
   return (
     <section id="how" className="scroll-mt-24 py-12 md:py-24">
       <Container className="flex flex-col gap-12">
         <SectionHeader title="From a hunch to a number you can act on" lead="One pass covers the customer, the money, the competition, the channel, and the timing before you spend months building." />
         <Reveal delay={120}>
-          <div ref={ref} className="flex flex-col gap-4" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+          <div ref={ref} className="flex flex-col gap-4">
             <div className="grid gap-3 md:grid-cols-3">
               {steps.map((s, i) => {
                 const on = i === active;
@@ -144,7 +192,11 @@ function Workflow() {
                     className={cn("relative flex flex-col gap-4 overflow-hidden rounded-lg border p-6 text-left transition-colors", on ? "border-line bg-canvas shadow-card" : "border-transparent bg-muted hover:bg-subtle")}
                   >
                     <span className="absolute inset-x-0 top-0 h-0.5 bg-line">
-                      <span className={cn("block h-full bg-brand", on ? "w-full" : "w-0")} />
+                      <span
+                        key={on ? active : `idle-${i}`}
+                        className={cn("block h-full bg-brand", on && "step-progress")}
+                        style={on ? { animationDuration: `${STEP_MS}ms`, animationPlayState: inView ? "running" : "paused" } : undefined}
+                      />
                     </span>
                     <span className="flex items-center justify-between">
                       <span className={cn("inline-flex size-8 items-center justify-center rounded-sm [&_svg]:size-4", on ? "bg-brand text-on-brand" : "bg-subtle text-fg-secondary")}>{s.icon}</span>
@@ -159,37 +211,56 @@ function Workflow() {
                 );
               })}
             </div>
-            <DemoFrame label={`${steps[active].title} preview`} background="/marketing/feature-dunes.png" windowClassName="border-0 bg-transparent p-0 shadow-none">
-              {active === 0 && (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {[
-                    ["Customer", SAMPLE_IDEA.intake.targetCustomer],
-                    ["Problem", SAMPLE_IDEA.intake.problem],
-                    ["Price", `$${SAMPLE_IDEA.intake.price}/mo`],
-                    ["MRR goal", `$${SAMPLE_IDEA.intake.mrrGoal.toLocaleString("en-US")}`],
-                  ].map(([label, value]) => (
-                    <div key={String(label)} className="flex flex-col gap-1 rounded-lg border border-line bg-canvas p-4">
-                      <span className="text-small font-medium text-fg-tertiary">{label}</span>
-                      <span className="text-body font-medium text-fg">{value}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {active === 1 && (
-                <ul className="m-0 flex list-none flex-col divide-y divide-line rounded-lg border border-line bg-canvas p-0">
-                  {findings.map((f) => (
-                    <li key={f.id} className="px-4 py-3">
-                      <div className="flex items-center justify-between gap-2">
-                        <SourceLabel sourceId={f.sourceId} />
-                        <SentimentTag s={f.sentiment} />
+            <div
+              className="grid [&>*]:col-start-1 [&>*]:row-start-1"
+              style={
+                {
+                  "--workflow-demo-fade-out": `${DEMO_FADE_OUT_MS}ms`,
+                  "--workflow-demo-fade-in": `${DEMO_FADE_IN_MS}ms`,
+                } as CSSProperties
+              }
+            >
+              {steps.map((s, i) => (
+                <div
+                  key={s.title}
+                  className={cn("min-w-0", workflowDemoClass(i, active, transition, intro))}
+                  inert={!workflowDemoVisible(i, active, transition, intro)}
+                  aria-hidden={!workflowDemoVisible(i, active, transition, intro)}
+                >
+                  <DemoFrame label={`${s.title} preview`} background="/marketing/feature-dunes.png" windowClassName="border-0 bg-transparent p-0 shadow-none">
+                    {i === 0 && (
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {[
+                          ["Customer", SAMPLE_IDEA.intake.targetCustomer],
+                          ["Problem", SAMPLE_IDEA.intake.problem],
+                          ["Price", `$${SAMPLE_IDEA.intake.price}/mo`],
+                          ["MRR goal", `$${SAMPLE_IDEA.intake.mrrGoal.toLocaleString("en-US")}`],
+                        ].map(([label, value]) => (
+                          <div key={String(label)} className="flex flex-col gap-1 rounded-lg border border-line bg-canvas p-4">
+                            <span className="text-small font-medium text-fg-tertiary">{label}</span>
+                            <span className="text-body font-medium text-fg">{value}</span>
+                          </div>
+                        ))}
                       </div>
-                      <p className="m-0 mt-1 text-body font-medium text-fg">{f.title}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {active === 2 && <ScoreHeader report={SAMPLE_REPORT} compact headingId="workflow-score" />}
-            </DemoFrame>
+                    )}
+                    {i === 1 && (
+                      <ul className="m-0 flex list-none flex-col divide-y divide-line rounded-lg border border-line bg-canvas p-0">
+                        {findings.map((f) => (
+                          <li key={f.id} className="px-4 py-3">
+                            <div className="flex items-center justify-between gap-2">
+                              <SourceLabel sourceId={f.sourceId} />
+                              <SentimentTag s={f.sentiment} />
+                            </div>
+                            <p className="m-0 mt-1 text-body font-medium text-fg">{f.title}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {i === 2 && <ScoreHeader report={SAMPLE_REPORT} compact headingId="workflow-score" />}
+                  </DemoFrame>
+                </div>
+              ))}
+            </div>
           </div>
         </Reveal>
       </Container>
@@ -198,8 +269,6 @@ function Workflow() {
 }
 
 export function LandingPage() {
-  const [preview, setPreview] = useState(false);
-
   return (
     <MarketingShell>
       <section id="top" className="relative isolate overflow-hidden pt-12 md:pt-[72px]">
@@ -210,14 +279,9 @@ export function LandingPage() {
             <p className="m-0 max-w-[764px] text-heading font-medium text-fg-secondary">
               You want reliable monthly revenue, enough to leave a 9-to-5, whether you write the code or not. Desy gathers evidence, scores the opportunity, and tells you what to test before you spend months building.
             </p>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Button asChild size="lg" variant="primary">
-                <Link href="/sign-up">Validate an idea</Link>
-              </Button>
-              <Button size="lg" variant="outline" onClick={() => setPreview(true)}>
-                See a sample report
-              </Button>
-            </div>
+            <Button asChild size="lg" variant="primary">
+              <Link href="/sign-up">Validate an idea</Link>
+            </Button>
           </Reveal>
           <Reveal delay={150} className="mt-12 md:mt-[120px]">
             <AppPreview />
@@ -258,7 +322,7 @@ export function LandingPage() {
           />
           <div id="planner" className="scroll-mt-24">
             <FeatureRow
-              visual={<CitedFindingVisual />}
+              visual={<ActionPlanVisual />}
               title="Scaling your idea into something actionable"
               body="Once an idea is set, Desy doesn’t just stop there. It provides clear guidance on how to go through discovery interviews, testing plans, and pitches using best practices from the industry."
               action={
@@ -280,24 +344,6 @@ export function LandingPage() {
           />
           <Reveal>
             <div aria-hidden className="aspect-[1232/555] w-full rounded-xl bg-placeholder" />
-          </Reveal>
-        </Container>
-      </section>
-
-      <section id="sample" className="scroll-mt-24 py-12 md:py-24">
-        <Container className="flex flex-col gap-12">
-          <SectionHeader eyebrow="Sample" title="Invoice reminders for freelance designers" lead="Open a filter to read the criteria, the solo-founder reading, and the evidence." />
-          <Reveal>
-            <div className="overflow-hidden rounded-xl border border-line bg-canvas shadow-card">
-              <div className="max-h-[720px] overflow-y-auto">
-                <SampleBody idPrefix="sample-" onFilter={(id) => document.getElementById(`sample-filter-${id}`)?.scrollIntoView({ block: "start" })} />
-              </div>
-            </div>
-            <div className="mt-6 flex justify-center">
-              <Button size="lg" variant="outline" onClick={() => setPreview(true)}>
-                Open larger preview
-              </Button>
-            </div>
           </Reveal>
         </Container>
       </section>
@@ -330,22 +376,6 @@ export function LandingPage() {
         </Container>
       </section>
 
-      <Dialog open={preview} onOpenChange={setPreview}>
-        <DialogContent title="Sample report" description={`${SAMPLE_IDEA.intake.name}. A strong-pursuit example from the demo data.`} wide className="max-w-5xl">
-          <SampleBody idPrefix="dlg-" onFilter={(id) => document.getElementById(`dlg-filter-${id}`)?.scrollIntoView({ block: "start" })} />
-          <div className="mt-4">
-            <Button
-              size="sm"
-              onClick={() => {
-                setPreview(false);
-                document.getElementById("sample")?.scrollIntoView({ block: "start" });
-              }}
-            >
-              Keep reading on the page
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </MarketingShell>
   );
 }
