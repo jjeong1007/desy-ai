@@ -54,7 +54,7 @@ export function SiteHeader() {
             </Button>
           )}
           <Button asChild size="lg" variant="primary">
-            <Link href={signedIn ? "/app" : "/sign-up"}>{signedIn ? "Open app" : "Validate an idea"}</Link>
+            <Link href={signedIn ? "/app" : "/#top"}>{signedIn ? "Open app" : "Join waitlist"}</Link>
           </Button>
           <ThemeToggle />
           <IconButton label={open ? "Close menu" : "Open menu"} size="lg" className="md:hidden" aria-expanded={open} onClick={() => setOpen((v) => !v)}>

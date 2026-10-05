@@ -6,7 +6,7 @@ let client: SupabaseClient | null = null;
 
 /**
  * Service-role client. Bypasses RLS, so every query must filter by user_id itself.
- * Used only for account deletion and MCP token lookup.
+ * Used only for account deletion, MCP token lookup, and the waitlist.
  */
 export function supabaseAdmin(): SupabaseClient {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

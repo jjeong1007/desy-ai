@@ -10,6 +10,7 @@ import { Accordion } from "@/components/marketing/parts";
 import { HeroDots } from "@/components/marketing/hero-dots";
 import { DescribeDemo, ResearchDemo } from "@/components/marketing/workflow-demos";
 import { PricingBlock } from "@/components/marketing/pricing-block";
+import { WaitlistForm } from "@/components/marketing/waitlist-form";
 import { ScoreHeader } from "@/components/report/score-header";
 import { IDEA_TABS, OverviewDashboard } from "@/components/report/idea-pages";
 import { Button } from "@/components/ui/button";
@@ -281,9 +282,7 @@ export function LandingPage() {
             <p className="m-0 max-w-[764px] text-heading font-medium text-fg-secondary">
               Before tackling a new idea for the next 6 months, de-risk it through Desy by benchmarking your idea. Desy gathers data, scores the opportunity, and tells you what to test before you spend months building.
             </p>
-            <Button asChild size="lg" variant="primary">
-              <Link href="/sign-up">Validate an idea</Link>
-            </Button>
+            <WaitlistForm source="hero" />
           </Reveal>
           <Reveal delay={150} className="mt-12 md:mt-[120px]">
             <AppPreview />
@@ -384,10 +383,8 @@ export function LandingPage() {
               Know what to test tomorrow.
             </h2>
           </Reveal>
-          <Reveal delay={120}>
-            <Button asChild size="lg" variant="primary">
-              <Link href="/sign-up">Validate an idea</Link>
-            </Button>
+          <Reveal delay={120} className="flex w-full justify-center">
+            <WaitlistForm source="footer" />
           </Reveal>
         </Container>
       </section>
